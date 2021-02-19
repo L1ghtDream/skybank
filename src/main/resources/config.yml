@@ -2,9 +2,24 @@
 tax-time: 1000000
 #in ticks (1s = 20t)
 update-time-tax-time: 120
+#Number of unpaid taxes after which the player will get sanctions
+tax-limit: 3
+#The size of the island when the tax threshold is exceeded.
+over-tax-size: 10
+#Percent of the normal tax added to count if the player exceeds the tax limit
+over-tax: 20
+#Percent of player money that will have to pay to leave the island
+leave-tax: 2
+#Time after which the tax for leaving the island expires in s
+leave-tax-timeout: 600
+
 #block number : percentage
 #block number 0 is the default if the border has not been found
 border-tax:
   - "0:10"
   - "20:12"
   - "40:12.3"
+  - "60:12.6"
+  - "80:12.9"
+  - "100:14"
+

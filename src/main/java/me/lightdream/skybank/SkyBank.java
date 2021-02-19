@@ -2,6 +2,8 @@ package me.lightdream.skybank;
 
 import me.lightdream.skybank.commands.CommandHandler;
 import me.lightdream.skybank.enums.LoadFileType;
+import me.lightdream.skybank.listener.EventListener;
+import me.lightdream.skybank.utils.Language;
 import me.lightdream.skybank.utils.Utils;
 import net.milkbowl.vault.chat.Chat;
 import net.milkbowl.vault.economy.Economy;
@@ -54,10 +56,11 @@ public final class SkyBank extends JavaPlugin {
         }
         setupPermissions();
         //setupChat();
+        Language.loadLang();
 
         //Setup Config
-        config = Utils.loadConfig("config.yml", LoadFileType.DEFAULT);
-        data = Utils.loadConfig("data.yml", LoadFileType.DEFAULT);
+        config = Utils.loadFile("config.yml", LoadFileType.DEFAULT);
+        data = Utils.loadFile("data.yml", LoadFileType.DEFAULT);
 
         //Setting variable of external classes
         Runnable.setLastTaxTime(config.getInt("tax-time"));
@@ -65,14 +68,15 @@ public final class SkyBank extends JavaPlugin {
 
         //Command setup
         commandHandler = new CommandHandler(this);
+        getServer().getPluginManager().registerEvents(new EventListener(), this);
 
 
     }
 
     @Override
     public void onDisable() {
-        Utils.saveConfig(config, "config.yml");
-        Utils.saveConfig(data, "data.yml");
+        Utils.saveFile(config, "config.yml");
+        Utils.saveFile(data, "data.yml");
     }
 
 

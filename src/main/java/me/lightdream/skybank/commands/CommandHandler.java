@@ -32,6 +32,7 @@ public class CommandHandler {
     private void loadCommands() {
         registerCommand(HelpCommand.class);
         registerCommand(TaxCommand.class);
+        registerCommand(LeaveTaxCommand.class);
     }
 
     private void registerCommand(Class<? extends BaseCommand> cmdClass) {
@@ -46,10 +47,10 @@ public class CommandHandler {
     private void registerPermissions() {
         PluginManager pm = Bukkit.getPluginManager();
         COMMANDS.forEach((command, baseCmd) -> {
-            String perm = "hg." + command;
+            String perm = "skybank." + command;
             if (pm.getPermission(perm) == null) {
                 Permission permission = new Permission(perm);
-                permission.setDescription(String.format("Grants user access to HungerGames command '/hg %s'", command));
+                permission.setDescription(String.format("Grants user access to HungerGames command '/skybank %s'", command));
                 permission.setDefault(baseCmd.permissionDefault);
                 pm.addPermission(permission);
             }
@@ -66,7 +67,7 @@ public class CommandHandler {
     }
 
     public BaseCommand getCommand(String command) {
-        Preconditions.checkArgument(COMMANDS.containsKey(command), "HungerGames command does not exist: '/hg %s'", command);
+        Preconditions.checkArgument(COMMANDS.containsKey(command), "HungerGames command does not exist: '/skybank %s'", command);
         return COMMANDS.get(command);
     }
 

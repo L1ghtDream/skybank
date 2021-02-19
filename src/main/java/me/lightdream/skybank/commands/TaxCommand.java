@@ -1,24 +1,12 @@
 package me.lightdream.skybank.commands;
 
 import me.lightdream.skybank.SkyBank;
-import me.lightdream.skybank.enums.LoadFileType;
 import me.lightdream.skybank.utils.Language;
 import me.lightdream.skybank.utils.Utils;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.entity.Player;
-import world.bentobox.bentobox.BentoBox;
-import world.bentobox.bentobox.api.user.User;
-import world.bentobox.bentobox.database.objects.Island;
-
-import java.util.List;
-
-import static me.lightdream.skybank.SkyBank.bentoBox;
-import static me.lightdream.skybank.SkyBank.skyblock;
 
 public class TaxCommand extends BaseCommand{
 
-    //skybank tax
-    //skybank tax pay
     public TaxCommand() {
         forcePlayer = true;
         commandName = "tax";
@@ -28,29 +16,73 @@ public class TaxCommand extends BaseCommand{
     @Override
     public boolean run() {
 
-        if(args.length == 1){
-            int tax = getTax(player);
-            int size = getSize(player);
-            double taxValue = getTaxValue(player, size);
-            double taxPrice = getTaxPrice(player, taxValue);
+        //TODO: [DONE] Make the taxPrice be influenced about the back log
+        //TODO: [DONE] Read form config the "backlog-exceed-tax" and apply it on tax pay if the backlog is exceeded
+        //TODO: [DONE] Check if the available balance is enough
+        //TODO: [DONE] Implement the island leave tax
+        //TODO: [DONE] The island leave event must be valid 10m
 
-            System.out.println(Language.unpaid_taxes);
-            System.out.println(tax);
-            System.out.println(Language.unpaid_taxes.replace("%tax%", String.valueOf(tax)));
-            Utils.sendColoredMessage(sender, Language.unpaid_taxes.replace("%tax%", String.valueOf(tax)));
-            Utils.sendColoredMessage(sender, Language.island_size.replace("%size%", String.valueOf(size)));
-            Utils.sendColoredMessage(sender, Language.tax_value.replace("%tax%", String.valueOf(taxValue)));
-            Utils.sendColoredMessage(sender, Language.tax_price.replace("%tax%", String.valueOf(taxPrice)));
+
+        //TODO: Test
+        System.out.println(SkyBank.data.getInt("tax"));
+        SkyBank.data.set("tax", 5);
+
+        int tax = Utils.getTax(player);
+        int size = Utils.getIslandSize(player); //TODO: If size = 0 show just the error message not the rest of display
+        double taxValue = Utils.getTaxValue(player, size);
+        double taxPrice = Utils.getTaxPrice(player, taxValue);
+        double overtaxValue = 0;
+        double overtaxPrice = 0;
+        double totalPrice = 0;
+
+        if(tax >= SkyBank.config.getInt("tax-limit")){
+            overtaxValue = SkyBank.config.getDouble("over-tax");
+            overtaxPrice = taxPrice * tax * overtaxValue / 100;
+        }
+
+        totalPrice = overtaxPrice + taxPrice * tax;
+
+        if(args.length == 1){
+            Utils.sendColoredMessage(player, Language.unpaid_taxes.replace("%tax%", String.valueOf(tax)));
+            Utils.sendColoredMessage(player, Language.island_size.replace("%size%", String.valueOf(size)));
+            Utils.sendColoredMessage(player, Language.tax_value.replace("%tax%", String.valueOf(taxValue)));
+            Utils.sendColoredMessage(player, Language.tax_price.replace("%tax%", String.valueOf(taxPrice * tax)));
+            Utils.sendColoredMessage(player, Language.overtax_percent.replace("%tax%", String.valueOf(overtaxValue)));
+            Utils.sendColoredMessage(player, Language.overtax_price.replace("%tax%", String.valueOf(overtaxPrice)));
+            Utils.sendColoredMessage(player, "");
+            Utils.sendColoredMessage(player, Language.total_price.replace("%tax%", String.valueOf(totalPrice)));
 
             //TODO: Display a GUI
         }
         else if(args.length == 2){
             if(args[1].equalsIgnoreCase("pay")){
-                double balance = getBalance(player);
-                balance -= getTaxPrice(player);
-                FileConfiguration data = getDataFile(player);
-                data.set("tax", SkyBank.data.getInt("tax"));
-                setBalance(player, balance);
+
+                double balance = Utils.getBalance(player);
+
+                if(balance >= totalPrice){
+                    //TODO: [DONE] Relief from all the constrains of tax limit exceed
+                    balance -= totalPrice;
+
+                    FileConfiguration data = Utils.getPlayerDataFile(player);
+                    System.out.println(data.getInt("tax"));
+                    data.set("tax", SkyBank.data.getInt("tax"));
+                    System.out.println(SkyBank.data.getInt("tax"));
+                    System.out.println(data.getInt("tax"));
+                    if(data.getBoolean("over-tax")){
+                        Utils.getIsland(player).setProtectionRange(data.getInt("before-sanction-size"));
+                        data.set("before-sanction-size", 0);
+                        data.set("over-tax", false);
+                    }
+                    Utils.savePlayerDataFile(player, data);
+
+                    Utils.removeBalance(player, balance);
+
+                    Utils.sendColoredMessage(player, Language.paid_taxes);
+                }
+                else{
+                    //TODO: [DONE] Display a message
+                    Utils.sendColoredMessage(sender, Language.not_enough_money);
+                }
             }
         }
 
@@ -58,72 +90,4 @@ public class TaxCommand extends BaseCommand{
         return true;
     }
 
-    private int getTax(Player player){
-        return  SkyBank.data.getInt("tax") - getDataFile(player).getInt("tax");
-    }
-
-    private int getSize(Player player){
-        Island island = bentoBox.getIslands().getIsland(skyblock.getOverWorld(), User.getInstance(player));
-
-        if (island == null) {
-            Utils.sendPrefixedMessage(sender, Language.no_island_found);
-            return 0;
-        }
-
-        return island.getProtectionRange() * 2;
-    }
-
-    private double getTaxValue(Player player){
-
-        int size = getSize(player);
-
-        List<String> taxes = (List<String>) SkyBank.config.getList("border-tax");
-
-        for(String var1 : taxes){
-            String[] var2 = var1.split(":");
-            if(Integer.parseInt(var2[0]) == size){
-                return Double.parseDouble(var2[1]);
-            }
-            else if (Integer.parseInt(var2[0]) >= size){
-                break;
-            }
-        }
-        return Double.parseDouble(taxes.get(0).split(":")[1]);
-    }
-
-    private double getTaxValue(Player player, int size){
-
-        List<String> taxes = (List<String>) SkyBank.config.getList("border-tax");
-
-        for(String var1 : taxes){
-            String[] var2 = var1.split(":");
-            if(Integer.parseInt(var2[0]) == size){
-                return Double.parseDouble(var2[1]);
-            }
-            else if (Integer.parseInt(var2[0]) >= size){
-                break;
-            }
-        }
-        return Double.parseDouble(taxes.get(0).split(":")[1]);
-    }
-
-    private double getTaxPrice(Player player){
-        return getTaxValue(player) * getBalance(player) / 100;
-    }
-
-    private double getTaxPrice(Player player, double taxValue){
-        return taxValue * getBalance(player) / 100;
-    }
-
-    private double getBalance(Player player){
-        return SkyBank.economy.getBalance(player);
-    }
-
-    private FileConfiguration getDataFile(Player player){
-        return Utils.loadConfig("PlayerData/" + (player).getUniqueId() + ".yml", LoadFileType.PLAYER_DATA);
-    }
-
-    private void setBalance(Player player, double balance){
-        SkyBank.economy.depositPlayer(player, balance);
-    }
 }

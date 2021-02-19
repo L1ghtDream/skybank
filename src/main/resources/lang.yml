@@ -2,9 +2,22 @@ must_be_ingame: "&cThe command can only be run in game!"
 no_permission_command: "&cYou do not have the needed permission"
 wrong_usage_command: "&cThis is not the correnct usage of this command"
 no_island_found: "&cYou do not have any created island"
+not_enough_money: "You do not have enough money"
+pay_tax_to_leave_island: "You have to pay the tax to leave this island because this is under lock"
+use_tax_pay_confirm: "Use /skybank tax pay confirm to make the payment"
+already_have_leave_tax: "YeY! You already have the tax for leaving the island paid / non existent you can go ahead and leave the island"
+paid_taxes: "Your taxes have been paid sucesfuly"
 
 #/skybank tax
 unpaid_taxes: "Unpaid Taxes: x%tax%"
 island_size: "Size of island: %size%x%size%"
 tax_value: "Tax percent: %tax%%"
 tax_price: "Tax price: %tax%"
+overtax_percent: "Overtax percent: %tax%"
+overtax_price: "Overtax price: %tax%"
+total_price: "Total taxes to pay: %tax%"
+
+#/skybank leaveTax
+leave_tax_percent: "Leave tax: %tax%"
+leave_tax_value: "Leave tax price: %tax%"
+

@@ -1,5 +1,7 @@
 package me.lightdream.skybank.commands;
 
+import me.lightdream.skybank.utils.Utils;
+
 public class HelpCommand extends BaseCommand{
 
     public HelpCommand() {
@@ -11,7 +13,9 @@ public class HelpCommand extends BaseCommand{
     @Override
     public boolean run() {
 
-        //TODO: Display help
+        //TODO: [DONE] Display help
+
+        Utils.sendCommands(player);
 
         return true;
     }

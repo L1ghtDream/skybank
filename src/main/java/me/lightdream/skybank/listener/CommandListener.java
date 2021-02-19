@@ -23,7 +23,7 @@ public class CommandListener implements CommandExecutor/*, TabCompleter*/ {
 	// Handle sub-commands
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 		if (args.length == 0 || !cmdHandler.commandExists(args[0])) {
-			sendCommands(sender);
+			Utils.sendCommands(sender);
 		} else {
             BaseCommand command = cmdHandler.getCommand(args[0]);
             command.processCmd(plugin, sender, args);
@@ -31,6 +31,8 @@ public class CommandListener implements CommandExecutor/*, TabCompleter*/ {
 		return true;
 	}
 
+
+	//TODO: Implement tab auto complete
 	/*
 	@Override
 	public List<String> onTabComplete(CommandSender sender, Command command, String s, String[] args) {
@@ -172,15 +174,5 @@ public class CommandListener implements CommandExecutor/*, TabCompleter*/ {
 
 
 	 */
-	// Send a list of all available commands for the sender
-	private void sendCommands(CommandSender sender) {
-        Utils.sendColoredMessage(sender, "&4*&c&m                         &7*( &3&lHungerGames &7)*&c&m                          &4*");
-        cmdHandler.getCommands().forEach(command -> {
-            if (command.hasPermission(sender)) {
-                Utils.sendColoredMessage(sender, "  &7&l- " + command.sendHelpLine());
-            }
-        });
-        Utils.sendColoredMessage(sender, "&4*&c&m                                                                             &4*");
-    }
 
 }
