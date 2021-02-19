@@ -1,0 +1,8 @@
+name: SkyBank
+version: ${project.version}
+main: me.lightdream.skybank.SkyBank
+api-version: 1.16
+depend: [ BentoBox, Vault ]
+commands:
+  skybank:
+    description: SkyBank main command

@@ -1,0 +1,10 @@
+must_be_ingame: "&cThe command can only be run in game!"
+no_permission_command: "&cYou do not have the needed permission"
+wrong_usage_command: "&cThis is not the correnct usage of this command"
+no_island_found: "&cYou do not have any created island"
+
+#/skybank tax
+unpaid_taxes: "Unpaid Taxes: x%tax%"
+island_size: "Size of island: %size%x%size%"
+tax_value: "Tax percent: %tax%%"
+tax_price: "Tax price: %tax%"
