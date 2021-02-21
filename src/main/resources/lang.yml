@@ -1,12 +1,38 @@
+#You can use %newline% to add an enter to the message
+
+
+#------------------------------ Normal Messages ------------------------------
+
 must_be_ingame: "&cThe command can only be run in game!"
 no_permission_command: "&cYou do not have the needed permission"
-wrong_usage_command: "&cThis is not the correnct usage of this command"
+wrong_usage_command: "&cThis is not the correct usage of this command"
 no_island_found: "&cYou do not have any created island"
 not_enough_money: "You do not have enough money"
 pay_tax_to_leave_island: "You have to pay the tax to leave this island because this is under lock"
 use_tax_pay_confirm: "Use /skybank tax pay confirm to make the payment"
 already_have_leave_tax: "YeY! You already have the tax for leaving the island paid / non existent you can go ahead and leave the island"
-paid_taxes: "Your taxes have been paid sucesfuly"
+paid_taxes: "Your taxes have been paid sucessfully"
+invalid_number_format: "This is not a valid number"
+player_does_not_exist: "This player does not exist"
+exception_where_no_exception_was_expected_kick_reason: "An uncaught exception caused the server to not be able to create your file. Please try to reconnect. If you can not reconnect after several tries please contact a system administrator!"
+balance_updated: "Balance has been updated sucessfully"
+do_not_have_permission_loan: "You do not have the permission needed to get this loan"
+do_not_have_enough_hours_played_loan: "You do not have the permission needed to get this loan"
+available_loans: "Here are the avanible loans for you"
+no_available_loans: "Here are the avanible loans for you"
+loan_available: "&aAVAILABLE"
+loan_unavailable: "&cUNAVAILABLE"
+not_on_an_island: "This feature is disabled for you.You are not on an island"
+size_0_island: "Your island is invalid"
+something_went_wrong: "Something went wrong and we could not fetch the command for you."
+loan_does_not_exist: "This loan does not exist"
+can_not_take_loan: "We are sorry but you can not take this loan at the moment."
+loan_already_taken: "You have already taken this loan."
+unpaid_loans: "You have to pay for your loans %money%."
+loan_paid: "Loans paid."
+
+
+#------------------------------ Placeholdered Messages ------------------------------
 
 #/skybank tax
 unpaid_taxes: "Unpaid Taxes: x%tax%"
@@ -21,3 +47,15 @@ total_price: "Total taxes to pay: %tax%"
 leave_tax_percent: "Leave tax: %tax%"
 leave_tax_value: "Leave tax price: %tax%"
 
+#/skybank balance
+own_balance: "You have %money% in bank"
+others_balance: "%player% has %money% in bank"
+
+#/skybank interest
+interest_name: "Bank Interest Name: %name%"
+interest_percent: "Interest Percent: %interest%"
+interest_range: "Money Range: %min% - %max%"
+estimated_interest: "Estimated Interest: %interest%"
+
+#/skybank loan
+loan_listing: "   - %loan% - %status%"

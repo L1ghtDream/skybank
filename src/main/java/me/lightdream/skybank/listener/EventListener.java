@@ -1,73 +1,109 @@
 package me.lightdream.skybank.listener;
 
 import me.lightdream.skybank.SkyBank;
+import me.lightdream.skybank.enums.LoadFileType;
 import me.lightdream.skybank.enums.TaxType;
+import me.lightdream.skybank.exceptions.FileNotFoundException;
 import me.lightdream.skybank.utils.Language;
-import me.lightdream.skybank.utils.Utils;
+import me.lightdream.skybank.utils.API;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
-import world.bentobox.bentobox.api.events.island.IslandExitEvent;
+import world.bentobox.bentobox.api.events.island.IslandCreateEvent;
+import world.bentobox.bentobox.api.events.team.TeamLeaveEvent;
 import world.bentobox.bentobox.database.objects.Island;
 
+import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 public class EventListener implements Listener {
 
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event){
-        //TODO: [DONE] Check if the player is on an island
-        //TODO: [DONE] Check if the player is the owner of the island
 
-        Player player = event.getPlayer();
+        try {
+            Player player = event.getPlayer();
 
-        Island island = Utils.getIsland(player);
+            if(!SkyBank.playerLoggerNames.contains(player.getUniqueId().toString()))
+                SkyBank.playerLogger.add(API.getIpLogTemplate(player));
+            else
+                SkyBank.playerLogger.set(SkyBank.playerLoggerNames.indexOf(player.getUniqueId().toString()), API.getIpLogTemplate(player));
 
-        if(island == null)
-            return;
 
-        if(island.getOwner() == player.getUniqueId()){
-            //TODO: [DONE] Check if the player has unpaid taxes
-            if(Utils.getTax(player) != 0){
-                Utils.setTax(player, TaxType.PAID);
+
+
+            Island island = API.getIsland(player);
+            FileConfiguration data = API.loadPlayerDataFile(player, LoadFileType.PLAYER_DATA);
+
+            if(island == null)
+                return;
+
+            if(island.getOwner() == player.getUniqueId()){
+
+                if(API.getTaxData(player) != 0){
+                    API.setTax(player, TaxType.PAID);
+                }
+                return;
             }
-            return;
-        }
 
-        FileConfiguration data = Utils.getPlayerDataFile(player);
+            if(API.getTaxData(player) >= SkyBank.config.getInt("tax-limit")){
 
-        //TODO: [DONE] Check if the difference between player paid taxes and server taxes
+                data.set("over-tax", true);
+                data.set("before-sanction-size", API.getIslandSize(player));
 
-        if(Utils.getTax(player) >= SkyBank.config.getInt("tax-limit")){
+                API.savePlayerDataFile(player, data);
 
-            //TODO: [DONE] Apply sanctions
+                API.setIslandSize(island, SkyBank.config.getInt("over-tax-size"));
+            }
 
-            data.set("over-tax", true);
-            data.set("before-sanction-size", Utils.getIslandSize(player));
+            if(API.getInterest(player) != 0){
+                for(int i=0;i<API.getInterest(player);i++){
+                    API.addBankBalance(player, API.getBankBalance(player) + API.getBankBalance(player) * API.getInterestPercent(player) / 100);
+                }
+            }
 
-            Utils.savePlayerDataFile(player, data);
+            if(API.getLoanData(player) != 0){
+                for(int i=0;i<API.getLoanData(player);i++){
+                    API.addLoanByInterest(player);
+                }
+            }
 
-            Utils.setIslandSize(island, SkyBank.config.getInt("over-tax-size"));
+        } catch (FileNotFoundException e) {
+            SkyBank.logger.severe("Exception where no exception was expected");
+            e.printStackTrace();
+            event.getPlayer().kickPlayer("");
         }
     }
 
     @EventHandler
-    public void onIslandLeave (IslandExitEvent event){
+    public void onIslandLeave (TeamLeaveEvent event){
 
         UUID uuid = event.getPlayerUUID();
 
-        if(!Utils.getPlayerDataFile(uuid).getBoolean("leave-tax")){
-            Utils.sendColoredMessage(Bukkit.getPlayer(event.getPlayerUUID()), Language.pay_tax_to_leave_island);
-            event.setCancelled(true);
+        try {
+            if(!API.loadPlayerDataFile(uuid, LoadFileType.PLAYER_DATA_READ_ONLY).getBoolean("leave-tax")){
+                API.sendColoredMessage(Bukkit.getPlayer(event.getPlayerUUID()), Language.pay_tax_to_leave_island);
+
+                event.setCancelled(true); //TODO: Fix the non canceling
+            }
+        } catch (FileNotFoundException e) {
+            SkyBank.logger.severe("Exception where no exception was expected");
+            e.printStackTrace();
         }
-
-
-
-        //TODO: [DONE] Display a message informing the player that he can not leave the island without paying a tax because the island is locked
-        //TODO: [DONE] Do not execute the leave command without the check
     }
 
+    @EventHandler
+    public void onIslandCreate (IslandCreateEvent event){
+        try{
+            API.setTax(event.getPlayerUUID(), TaxType.PAID);
+        } catch (FileNotFoundException e) {
+            SkyBank.logger.severe("Exception where no exception was expected");
+            event.setCancelled(true);
+            e.printStackTrace();
+        }
+    }
 }

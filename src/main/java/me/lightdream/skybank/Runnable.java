@@ -7,45 +7,56 @@ import java.util.Date;
 
 public class Runnable {
 
-    private static double taxTime = 0;
-    private static double lastTaxTime = 0;
-    private static int taxes;
+    //Taxes
+    public static double taxTime = 0;
+    public static double lastTaxTime = 0;
 
-    public void init(){
+    //Interests
+    public static double interestTime = 0;
+    public static double lastInterestTime = 0;
+
+    //Loans
+    public static double loanTime = 0;
+    public static double lastLoanTime = 0;
+
+
+    public static void init(){
+
+        //Taxes
         new BukkitRunnable(){
             @Override
             public void run() {
                 double timeNow = new Date().getTime();
                 if (timeNow - lastTaxTime  >= taxTime) {
-                    taxes++;
+                    SkyBank.data.set("taxes", SkyBank.data.getInt("taxes"));
                     lastTaxTime = timeNow;
                 }
             }
-        }.runTaskTimer(SkyBank.INSTANCE, 1200, 1200);
+        }.runTaskTimer(SkyBank.INSTANCE, 0, SkyBank.config.getInt("update-time-tax-time"));
 
-    }
+        //Interests
+        new BukkitRunnable(){
+            @Override
+            public void run() {
+                double timeNow = new Date().getTime();
+                if (timeNow - lastInterestTime  >= interestTime) {
+                    SkyBank.data.set("interest", SkyBank.data.getInt("interest"));
+                    lastInterestTime = timeNow;
+                }
+            }
+        }.runTaskTimer(SkyBank.INSTANCE, 0, SkyBank.config.getInt("update-time-ineterest-time"));
 
-    public static void setTaxTime(double time){
-        taxTime = time;
-    }
+        //Loans
+        new BukkitRunnable(){
+            @Override
+            public void run() {
+                double timeNow = new Date().getTime();
+                if (timeNow - lastLoanTime  >= loanTime) {
+                    SkyBank.data.set("loan", SkyBank.data.getInt("loan"));
+                    loanTime = timeNow;
+                }
+            }
+        }.runTaskTimer(SkyBank.INSTANCE, 0, SkyBank.config.getInt("update-time-ineterest-time"));
 
-    public static void setLastTaxTime(double time){
-        lastTaxTime = time;
-    }
-
-    public static void setTaxes(int tax){
-        taxes = tax;
-    }
-
-    public static double getTaxTime(){
-        return taxTime;
-    }
-
-    public static double getLastTaxTime(){
-        return lastTaxTime;
-    }
-
-    public static int getTaxes() {
-        return taxes;
     }
 }

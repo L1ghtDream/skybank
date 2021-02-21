@@ -1,4 +1,8 @@
 tax: 0
+interest: 0
+loan: 0
 over-tax: false
 before-sanction-size: 0
 leave-tax: false
+
+bank-balance: 0

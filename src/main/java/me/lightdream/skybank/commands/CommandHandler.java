@@ -30,15 +30,23 @@ public class CommandHandler {
     }
 
     private void loadCommands() {
-        registerCommand(HelpCommand.class);
         registerCommand(TaxCommand.class);
         registerCommand(LeaveTaxCommand.class);
+        registerCommand(DepositCommand.class);
+        registerCommand(WithdrawCommand.class);
+        registerCommand(BalanceCommand.class);
+        registerCommand(SetBalanceCommand.class);
+        registerCommand(InterestCommand.class);
+        registerCommand(LoanCommand.class);
     }
 
     private void registerCommand(Class<? extends BaseCommand> cmdClass) {
         try {
             BaseCommand command = cmdClass.newInstance();
             COMMANDS.put(command.commandName, command);
+            for(String alias : command.aliases){
+                COMMANDS.put(alias, command);
+            }
         } catch (InstantiationException | IllegalAccessException e) {
             e.printStackTrace();
         }
@@ -50,7 +58,7 @@ public class CommandHandler {
             String perm = "skybank." + command;
             if (pm.getPermission(perm) == null) {
                 Permission permission = new Permission(perm);
-                permission.setDescription(String.format("Grants user access to HungerGames command '/skybank %s'", command));
+                permission.setDescription(String.format("Grants user access to SkyBank Command command '/skybank %s'", command));
                 permission.setDefault(baseCmd.permissionDefault);
                 pm.addPermission(permission);
             }
@@ -67,7 +75,7 @@ public class CommandHandler {
     }
 
     public BaseCommand getCommand(String command) {
-        Preconditions.checkArgument(COMMANDS.containsKey(command), "HungerGames command does not exist: '/skybank %s'", command);
+        Preconditions.checkArgument(COMMANDS.containsKey(command), "SkyBank command does not exist: '/skybank %s'", command);
         return COMMANDS.get(command);
     }
 

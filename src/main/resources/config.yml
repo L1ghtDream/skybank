@@ -1,5 +1,7 @@
-#in ms (1s = 1000ms)
-tax-time: 1000000
+# ------------------------------ Taxing ------------------------------
+
+#in ms (1 s = 1000 ms, 1d = 86400000 ms)
+tax-time: 86400000
 #in ticks (1s = 20t)
 update-time-tax-time: 120
 #Number of unpaid taxes after which the player will get sanctions
@@ -17,9 +19,72 @@ leave-tax-timeout: 600
 #block number 0 is the default if the border has not been found
 border-tax:
   - "0:10"
+  - "10:11"
   - "20:12"
   - "40:12.3"
   - "60:12.6"
   - "80:12.9"
   - "100:14"
+
+# ------------------------------ Banking ------------------------------
+interests:
+  - name: "Bank Interest 1" #Name of the interest
+    interest: 1.8 #Percent that the player will get after a cycle
+    permission: "bank.interest.1" #Permission needed
+    max-money: 10000 #Max money that will have this interest (in bank)
+    min-money: 1 #Min money that will have this interest (in bank)
+  - name: "Bank Interest 2" #Name of the interest
+    interest: 1.6 #Percent that the player will get after a cycle
+    permission: "bank.interest.2" #Permission needed
+    max-money: 20000 #Max money that will have this interest (in bank)
+    min-money: 10001 #Min money that will have this interest (in bank)
+  - name: "Bank Interest 3" #Name of the interest
+    interest: 1.4 #Percent that the player will get after a cycle
+    permission: "bank.interest.3" #Permission needed
+    max-money: 30000 #Max money that will have this interest (in bank)
+    min-money: 20001 #Min money that will have this interest (in bank)
+
+#in m (1d = 1440)
+interest-period: 1440
+#in ticks (1s = 20t)
+update-time-ineterest-time: 120
+
+# ------------------------------ Loaning ------------------------------
+
+# [!] DO NOT USE SPACES IN LOANS NAMING [!]
+
+loans:
+  - name: "Bank-Loan-1" #Name of the loan
+    interest: 5 #Percent of the loan will increase after a cycle
+    permission: "bank.loan.1" #Permission needed to get the loan
+    money: 10000 #Money that player will get in its bank account
+    hours-needed: 10 #Time played on the server to get this loan
+  - name: "Bank-Loan-2" #Name of the loan
+    interest: 7.5 #Percent of the loan will increase after a cycle
+    permission: "bank.loan.2" #Permission needed to get the loan
+    money: 30000 #Money that player will get in its bank account
+    hours-needed: 20 #Time played on the server to get this loan
+  - name: "Bank-Loan-3" #Name of the loan
+    interest: 10 #Percent of the loan will increase after a cycle
+    permission: "bank.loan.3" #Permission needed to get the loan
+    money: 50000 #Money that player will get in its bank account
+    hours-needed: 30 #Time played on the server to get this loan
+#percent of the loan that will be added to the payment bill on loan take
+loan-interest-on-take: 5
+
+#in m (1d = 1440)
+loan-period: 1440
+after-loan-expire-addition: 5
+loan-blocked-commands:
+  - "/pay"
+  - "/shop"
+#in ticks (1s = 20t)
+update-time-loans-time: 120
+multiple-loan:
+  - permission: "loan.1.get"
+    loans: 1
+  - permission: "loan.2.get"
+    loans: 2
+  - permission: "loan.3.get"
+    loans: 3
 

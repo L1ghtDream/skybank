@@ -1,3 +1,7 @@
 #Do not alter any variable from here
 
 taxes: 0
+interest: 0
+loan: 0
+
+loaned-players: []
