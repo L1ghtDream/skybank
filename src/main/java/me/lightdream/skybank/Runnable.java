@@ -28,7 +28,7 @@ public class Runnable {
             public void run() {
                 double timeNow = new Date().getTime();
                 if (timeNow - lastTaxTime  >= taxTime) {
-                    SkyBank.data.set("taxes", SkyBank.data.getInt("taxes"));
+                    SkyBank.data.set("taxes", SkyBank.data.getInt("taxes") + 1);
                     lastTaxTime = timeNow;
                 }
             }
@@ -40,7 +40,7 @@ public class Runnable {
             public void run() {
                 double timeNow = new Date().getTime();
                 if (timeNow - lastInterestTime  >= interestTime) {
-                    SkyBank.data.set("interest", SkyBank.data.getInt("interest"));
+                    SkyBank.data.set("interest", SkyBank.data.getInt("interest") + 1);
                     lastInterestTime = timeNow;
                 }
             }
@@ -52,7 +52,7 @@ public class Runnable {
             public void run() {
                 double timeNow = new Date().getTime();
                 if (timeNow - lastLoanTime  >= loanTime) {
-                    SkyBank.data.set("loan", SkyBank.data.getInt("loan"));
+                    SkyBank.data.set("loan", SkyBank.data.getInt("loan") + 1);
                     loanTime = timeNow;
                 }
             }

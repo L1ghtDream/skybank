@@ -1,6 +1,7 @@
 package me.lightdream.skybank;
 
 import me.lightdream.skybank.commands.CommandHandler;
+import me.lightdream.skybank.dependencies.PAPI;
 import me.lightdream.skybank.enums.LoadFileType;
 import me.lightdream.skybank.exceptions.FileNotFoundException;
 import me.lightdream.skybank.listener.EventListener;
@@ -10,6 +11,7 @@ import net.milkbowl.vault.chat.Chat;
 import net.milkbowl.vault.economy.Economy;
 import net.milkbowl.vault.permission.Permission;
 import org.bukkit.Bukkit;
+import org.bukkit.NamespacedKey;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -30,6 +32,7 @@ public final class SkyBank extends JavaPlugin {
     public static FileConfiguration config;
     public static FileConfiguration data;
     public static FileConfiguration ipLog;
+    public static FileConfiguration guiConfig;
     public static GameModeAddon skyblock;
     public static BentoBox bentoBox;
     public static CommandHandler commandHandler;
@@ -43,12 +46,29 @@ public final class SkyBank extends JavaPlugin {
     public static List<Map<?, ?>> playerLogger;
     public static ArrayList<String> playerLoggerNames = new ArrayList<>();;
 
+    public static NamespacedKey payTax;
+    public static NamespacedKey getLoan;
+    public static NamespacedKey payLoan;
+    //public static NamespacedKey helpKey;
+    //public static NamespacedKey viewTopKey;
 
 
     @Override
     public void onEnable() {
 
+        payTax = new NamespacedKey(this,"payTax");
+        getLoan = new NamespacedKey(this,"getLoan");
+        payLoan = new NamespacedKey(this,"payLoan");
+
+
         try {
+
+            if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
+                new PAPI().register();
+            } else {
+                System.out.println("Could not find PlaceholderAPI! This plugin is required.");
+                Bukkit.getPluginManager().disablePlugin(this);
+            }
 
             //Setup instancing
             logger = super.getLogger();
@@ -75,6 +95,7 @@ public final class SkyBank extends JavaPlugin {
             config = API.loadFile("config.yml", LoadFileType.DEFAULT);
             data = API.loadFile("data.yml", LoadFileType.DEFAULT);
             ipLog = API.loadFile("ip.yml", LoadFileType.DEFAULT);
+            guiConfig = API.loadFile("gui.yml", LoadFileType.DEFAULT);
 
             //Setup data.yml
             loanedPLayers = API.loadFile("data.yml", LoadFileType.DEFAULT).getMapList("loaned-players");
@@ -89,9 +110,9 @@ public final class SkyBank extends JavaPlugin {
                 playerLoggerNames.add((String) map.get("uuid"));
 
             //Setting variable of external classes
-            Runnable.taxTime = config.getInt("tax-time");
-            Runnable.interestTime = config.getInt("interest-time");
-            Runnable.loanTime = config.getInt("loanTime-time");
+            Runnable.taxTime = config.getInt("tax-time") * 60 * 20;
+            Runnable.interestTime = config.getInt("interest-time") * 60 * 20;
+            Runnable.loanTime = config.getInt("loanTime-time") * 60 * 20;
 
             //Command setup
             commandHandler = new CommandHandler(this);

@@ -1,23 +1,25 @@
 package me.lightdream.skybank.listener;
 
 import me.lightdream.skybank.SkyBank;
+import me.lightdream.skybank.commands.TaxCommand;
 import me.lightdream.skybank.enums.LoadFileType;
 import me.lightdream.skybank.enums.TaxType;
 import me.lightdream.skybank.exceptions.FileNotFoundException;
-import me.lightdream.skybank.utils.Language;
+import me.lightdream.skybank.gui.GUIManager;
 import me.lightdream.skybank.utils.API;
+import me.lightdream.skybank.utils.Language;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.persistence.PersistentDataType;
 import world.bentobox.bentobox.api.events.island.IslandCreateEvent;
 import world.bentobox.bentobox.api.events.team.TeamLeaveEvent;
 import world.bentobox.bentobox.database.objects.Island;
 
-import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 public class EventListener implements Listener {
@@ -105,5 +107,22 @@ public class EventListener implements Listener {
             event.setCancelled(true);
             e.printStackTrace();
         }
+    }
+
+    @EventHandler
+    public void onInventoryClick(InventoryClickEvent event){
+        try {
+            if(GUIManager.protectedInventories.contains(event.getView().getTitle())){
+                if(event.getCurrentItem().getItemMeta().getPersistentDataContainer().has(SkyBank.payTax, PersistentDataType.STRING)){
+                    TaxCommand.payTax((Player) event.getWhoClicked(), API.getTaxTotalPrice(event.getWhoClicked().getUniqueId()));
+                }
+
+                event.setCancelled(true);
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+
+
     }
 }

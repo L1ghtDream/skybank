@@ -53,6 +53,7 @@ public class Language {
     public static String loan_already_taken;
     public static String unpaid_loans;
     public static String loan_paid;
+    public static String gui_status_updated;
 
 
     public static void loadLang(){
@@ -103,6 +104,7 @@ public class Language {
             loan_already_taken                                    = lang.getString("loan_already_taken");
             unpaid_loans                                          = lang.getString("unpaid_loans");
             loan_paid                                             = lang.getString("loan_paid");
+            gui_status_updated                                    = lang.getString("gui_status_updated");
 
         } catch (FileNotFoundException e) {
             SkyBank.logger.severe("Exception where no exception was expected");

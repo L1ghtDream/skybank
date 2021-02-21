@@ -3,9 +3,11 @@ package me.lightdream.skybank.commands;
 import me.lightdream.skybank.SkyBank;
 import me.lightdream.skybank.enums.LoadFileType;
 import me.lightdream.skybank.exceptions.FileNotFoundException;
+import me.lightdream.skybank.gui.GUIManager;
 import me.lightdream.skybank.utils.Language;
 import me.lightdream.skybank.utils.API;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.entity.Player;
 
 public class TaxCommand extends BaseCommand{
 
@@ -18,30 +20,25 @@ public class TaxCommand extends BaseCommand{
     @Override
     public boolean run() throws FileNotFoundException {
 
+        //TODO: Fix the non taxing bug
+
+        if(API.getGUIStatus(player)){
+            player.openInventory(GUIManager.getTaxInventory(player));
+            return true;
+        }
+
         int tax = API.getTaxData(player);
         int size = API.getIslandSize(player);
         double taxValue = API.getTaxValue(player, size);
         double taxPrice = API.getTaxPrice(player, taxValue);
-        double overtaxValue = 0;
-        double overtaxPrice = 0;
-        double totalPrice;
+        double overtaxValue = API.getPlayerOvertaxValue(player);
+        double overtaxPrice = API.getPlayerOvertaxPrice(player);
+        double totalPrice = overtaxPrice + taxPrice * tax;
 
         if(size == 0){
             API.sendColoredMessage(player, Language.size_0_island);
             return true;
         }
-
-        if(tax >= SkyBank.config.getInt("tax-limit")){
-            overtaxValue = SkyBank.config.getDouble("over-tax");
-            overtaxPrice = taxPrice * tax * overtaxValue / 100;
-        }
-
-        if(API.getIsland(player).getOwner() == player.getUniqueId()){
-            overtaxPrice = 0;
-            taxPrice = 0;
-        }
-
-        totalPrice = overtaxPrice + taxPrice * tax;
 
         if(args.length == 1){
             API.sendColoredMessage(player, Language.unpaid_taxes.replace("%tax%", String.valueOf(tax)));
@@ -57,38 +54,39 @@ public class TaxCommand extends BaseCommand{
         }
         else if(args.length == 2){
             if(args[1].equalsIgnoreCase("pay")){
-
-                double balance = API.getBalance(player);
-
-                if(totalPrice <= 0){
-                    API.sendColoredMessage(player, Language.something_went_wrong);
-                }
-
-                if(balance >= totalPrice){
-                    balance -= totalPrice;
-
-                    FileConfiguration data = API.loadPlayerDataFile(player, LoadFileType.PLAYER_DATA_READ_ONLY);
-                    data.set("tax", SkyBank.data.getInt("tax"));
-
-                    if(data.getBoolean("over-tax")){
-                        API.getIsland(player).setProtectionRange(data.getInt("before-sanction-size"));
-                        data.set("before-sanction-size", 0);
-                        data.set("over-tax", false);
-                    }
-
-                    API.savePlayerDataFile(player, data);
-                    API.removeBalance(player, balance);
-                    API.sendColoredMessage(player, Language.paid_taxes);
-                }
-                else{
-                    API.sendColoredMessage(sender, Language.not_enough_money);
-                }
+                payTax(player, totalPrice);
             }
         }
-
-
-
         return true;
+    }
+
+    public static void payTax(Player player, double totalPrice) throws FileNotFoundException {
+        double balance = API.getBalance(player);
+
+        if(totalPrice <= 0){
+            API.sendColoredMessage(player, Language.something_went_wrong);
+        }
+
+        if(balance >= totalPrice){
+            balance -= totalPrice;
+
+            FileConfiguration data = API.loadPlayerDataFile(player, LoadFileType.PLAYER_DATA_READ_ONLY);
+            data.set("tax", SkyBank.data.getInt("tax"));
+
+            if(data.getBoolean("over-tax")){
+                API.getIsland(player).setProtectionRange(data.getInt("before-sanction-size"));
+                data.set("before-sanction-size", 0);
+                data.set("over-tax", false);
+            }
+
+            API.savePlayerDataFile(player, data);
+            API.removeBalance(player, balance);
+            API.sendColoredMessage(player, Language.paid_taxes);
+        }
+        else{
+            API.sendColoredMessage(player, Language.not_enough_money);
+        }
+
     }
 
 }

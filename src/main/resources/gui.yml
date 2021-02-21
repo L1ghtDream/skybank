@@ -1,0 +1,37 @@
+tax-gui:
+  title: "Tax"
+  tax-item:
+    position: 0
+    display-name: "Taxes"
+    lore:
+      - "%skybank_tax_count%"
+  size-item:
+    position: 1
+    display-name: "Size"
+    lore:
+      - "%skybank_island_size%"
+  tax-value-item:
+    position: 2
+    display-name: "Tax Percent"
+    lore:
+      - "%skybank_tax_value%"
+  tax-price-item:
+    position: 3
+    display-name: "Tax Price"
+    lore:
+      - "%skybank_tax_price%"
+  overtax-value-item:
+    position: 4
+    display-name: "OverTaxes Percent"
+    lore:
+      - "%skybank_overtax_value%"
+  overtax-price-item:
+    position: 5
+    display-name: "OverTaxes Price"
+    lore:
+      - "%skybank_overtax_price%"
+  total-item:
+    position: 6
+    display-name: "Total Price"
+    lore:
+      - "%skybank_tax_total_price%"

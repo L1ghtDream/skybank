@@ -38,6 +38,8 @@ public class CommandHandler {
         registerCommand(SetBalanceCommand.class);
         registerCommand(InterestCommand.class);
         registerCommand(LoanCommand.class);
+        registerCommand(GUICommand.class);
+        registerCommand(DebugCommand.class);
     }
 
     private void registerCommand(Class<? extends BaseCommand> cmdClass) {

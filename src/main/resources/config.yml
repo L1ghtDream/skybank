@@ -1,7 +1,7 @@
 # ------------------------------ Taxing ------------------------------
 
-#in ms (1 s = 1000 ms, 1d = 86400000 ms)
-tax-time: 86400000
+#in m (1d = 1440)
+tax-time: 1440
 #in ticks (1s = 20t)
 update-time-tax-time: 120
 #Number of unpaid taxes after which the player will get sanctions
@@ -45,7 +45,7 @@ interests:
     min-money: 20001 #Min money that will have this interest (in bank)
 
 #in m (1d = 1440)
-interest-period: 1440
+interest-time: 1440
 #in ticks (1s = 20t)
 update-time-ineterest-time: 120
 
@@ -73,7 +73,7 @@ loans:
 loan-interest-on-take: 5
 
 #in m (1d = 1440)
-loan-period: 1440
+loan-time: 1440
 after-loan-expire-addition: 5
 loan-blocked-commands:
   - "/pay"

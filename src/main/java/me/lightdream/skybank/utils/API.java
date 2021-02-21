@@ -1,18 +1,19 @@
 package me.lightdream.skybank.utils;
 
+import me.clip.placeholderapi.PlaceholderAPI;
 import me.lightdream.skybank.SkyBank;
 import me.lightdream.skybank.enums.LoadFileType;
 import me.lightdream.skybank.enums.TaxType;
 import me.lightdream.skybank.exceptions.FileNotFoundException;
 import net.md_5.bungee.api.ChatColor;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.output.AppendableOutputStream;
 import org.bukkit.Bukkit;
 import org.bukkit.Statistic;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 import world.bentobox.bentobox.api.user.User;
 import world.bentobox.bentobox.database.objects.Island;
 
@@ -24,8 +25,22 @@ import static me.lightdream.skybank.SkyBank.*;
 
 public class API {
 
+    //TODO: Refactor for API and switch to use UUID for all functions
+
+
     public static String color(String str) {
         return ChatColor.translateAlternateColorCodes('&', str);
+    }
+
+    public static ArrayList<String> color(ArrayList<String> str) {
+
+        ArrayList<String> output = new ArrayList<>();
+
+        for(String var1 : str){
+            output.add(ChatColor.translateAlternateColorCodes('&', var1));
+        }
+
+        return output;
     }
 
     public static void createFile(String path, LoadFileType type) throws FileNotFoundException {
@@ -37,6 +52,8 @@ public class API {
                 FileUtils.copyInputStreamToFile(SkyBank.INSTANCE.getResource("playerData.yml"), new File(SkyBank.INSTANCE.getDataFolder(), path));
                 FileConfiguration data = loadFile(path, type);
                 data.set("tax", SkyBank.data.getInt("tax"));
+                data.set("interest", SkyBank.data.getInt("interest"));
+                data.set("loan", SkyBank.data.getInt("loan"));
                 saveFile(data, path);
             }
 
@@ -109,7 +126,17 @@ public class API {
 
         if (island == null) {
             SkyBank.logger.severe("No island found");
-            API.sendColoredMessage(player, Language.no_island_found);
+            return 0;
+        }
+
+        return island.getProtectionRange() * 2;
+    }
+
+    public static int getIslandSize(UUID uuid){
+        Island island = getIsland(uuid);
+
+        if (island == null) {
+            SkyBank.logger.severe("No island found");
             return 0;
         }
 
@@ -119,6 +146,24 @@ public class API {
     public static double getTaxValue(Player player){
 
         int size = getIslandSize(player);
+
+        List<String> taxes = (List<String>) SkyBank.config.getList("border-tax");
+
+        for(String var1 : taxes){
+            String[] var2 = var1.split(":");
+            if(Integer.parseInt(var2[0]) == size){
+                return Double.parseDouble(var2[1]);
+            }
+            else if (Integer.parseInt(var2[0]) >= size){
+                break;
+            }
+        }
+        return Double.parseDouble(taxes.get(0).split(":")[1]);
+    }
+
+    public static double getTaxValue(UUID uuid){
+
+        int size = getIslandSize(uuid);
 
         List<String> taxes = (List<String>) SkyBank.config.getList("border-tax");
 
@@ -154,6 +199,10 @@ public class API {
         return getTaxValue(player) * getBalance(player) / 100;
     }
 
+    public static double getTaxPrice(UUID uuid){
+        return getTaxValue(uuid) * getBalance(uuid) / 100;
+    }
+
     public static double getTaxPrice(Player player, double taxValue){
         return taxValue * getBalance(player) / 100;
     }
@@ -178,6 +227,10 @@ public class API {
         return SkyBank.economy.getBalance(player);
     }
 
+    public static double getBalance(UUID uuid){
+        return SkyBank.economy.getBalance(Bukkit.getOfflinePlayer(uuid));
+    }
+
     public static void removeBalance(Player player, double balance){
         SkyBank.economy.withdrawPlayer(player, balance);
     }
@@ -196,6 +249,10 @@ public class API {
 
     public static Island getIsland(Player player){
         return bentoBox.getIslands().getIsland(skyblock.getOverWorld(), User.getInstance(player));
+    }
+
+    public static Island getIsland(UUID uuid){
+        return bentoBox.getIslands().getIsland(skyblock.getOverWorld(), User.getInstance(uuid));
     }
 
     public static void setTax(Player player, TaxType type) throws FileNotFoundException {
@@ -414,7 +471,12 @@ public class API {
     }
 
     public static Map<?, ?> getBankLoan(Player player){
-        return loanedPLayers.get(loanedPLayersNames.indexOf(player.getUniqueId().toString()));
+        int index = loanedPLayersNames.indexOf(player.getUniqueId().toString());
+
+        if(index == -1)
+            return null;
+
+        return loanedPLayers.get(index);
     }
 
     public static void setBankLoan(Player player, Map<?, ?> map){
@@ -429,14 +491,84 @@ public class API {
 
     }
 
-    /*
-      - player: "someUUID"
-    name: "playerName"
-    to-pay: 0
-    loan:
-      - "Loan1"
-      - "Loan2"
-      - "Loan3"
-     */
+    public static boolean getPlayerGUIStatus(Player player) throws FileNotFoundException {
+        return loadPlayerDataFile(player, LoadFileType.PLAYER_DATA_READ_ONLY).getBoolean("gui");
+    }
+
+    public static boolean getPlayerGUIStatus(UUID uuid) throws FileNotFoundException {
+        return loadPlayerDataFile(uuid, LoadFileType.PLAYER_DATA_READ_ONLY).getBoolean("gui");
+    }
+
+    public static double getPlayerOvertaxValue(Player player) throws FileNotFoundException {
+        if(getTaxData(player) >= SkyBank.config.getInt("tax-limit")){
+            double output = SkyBank.config.getDouble("over-tax");
+
+            if(API.getIsland(player).getOwner() == player.getUniqueId())
+                return 0;
+
+            return output;
+        }
+        return 0;
+    }
+
+    public static double getPlayerOvertaxValue(UUID uuid) throws FileNotFoundException {
+        if(getTaxData(uuid) >= SkyBank.config.getInt("tax-limit")){
+            double output = SkyBank.config.getDouble("over-tax");
+
+            if(API.getIsland(uuid).getOwner() == uuid)
+                return 0;
+
+            return output;
+        }
+        return 0;
+    }
+
+    public static double getPlayerOvertaxPrice(Player player) throws FileNotFoundException {
+        if(getTaxData(player) >= SkyBank.config.getInt("tax-limit")){
+            double output = getTaxPrice(player) * getTaxData(player) * getPlayerOvertaxValue(player) / 100;
+
+            if(API.getIsland(player).getOwner() == player.getUniqueId())
+                return 0;
+
+            return output;
+        }
+        return 0;
+    }
+
+    public static double getPlayerOvertaxPrice(UUID uuid) throws FileNotFoundException {
+        if(getTaxData(uuid) >= SkyBank.config.getInt("tax-limit")){
+            double output = getTaxPrice(uuid) * getTaxData(uuid) * getPlayerOvertaxValue(uuid) / 100;
+
+            if(API.getIsland(uuid).getOwner() == uuid)
+                return 0;
+
+            return output;
+        }
+        return 0;
+    }
+
+    public static String processPlaceholder1(Player player, String s1, String s2){
+        return color(PlaceholderAPI.setPlaceholders(player, process1(s1, s2)));
+    }
+
+    public static ArrayList<String> processPlaceholder2(Player player, String s1, String s2){
+        return color(new ArrayList<>(PlaceholderAPI.setPlaceholders(player, process2(s1, s2))));
+    }
+
+    public static String process1(String s1, String s2){
+        return SkyBank.guiConfig.getString(String.format(s1, s2));
+    }
+
+    public static List<String> process2 (String s1, String s2){
+        return (List<String>) SkyBank.guiConfig.getList(String.format(s1, s2));
+    }
+
+    public static boolean getGUIStatus(Player player) throws FileNotFoundException {
+        return loadPlayerDataFile(player, LoadFileType.PLAYER_DATA_READ_ONLY).getBoolean("gui");
+    }
+
+    public static double getTaxTotalPrice(UUID uuid) throws FileNotFoundException {
+        return getPlayerOvertaxPrice(uuid) + getTaxPrice(uuid) * getTaxData(uuid);
+    }
 
 }

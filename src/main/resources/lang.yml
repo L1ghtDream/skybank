@@ -30,6 +30,7 @@ can_not_take_loan: "We are sorry but you can not take this loan at the moment."
 loan_already_taken: "You have already taken this loan."
 unpaid_loans: "You have to pay for your loans %money%."
 loan_paid: "Loans paid."
+gui_status_updated: "Your GUI status has been updated to %status%"
 
 
 #------------------------------ Placeholdered Messages ------------------------------
