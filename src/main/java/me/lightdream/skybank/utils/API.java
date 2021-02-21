@@ -98,7 +98,7 @@ public class API {
     }
 
     public static int getTaxData(Player player) throws FileNotFoundException {
-        return Math.abs(SkyBank.data.getInt("tax") - loadPlayerDataFile(player, LoadFileType.PLAYER_DATA_READ_ONLY).getInt("tax"));
+        return SkyBank.data.getInt("tax") - loadPlayerDataFile(player, LoadFileType.PLAYER_DATA_READ_ONLY).getInt("tax");
     }
 
     public static int getTaxData(UUID uuid) throws FileNotFoundException {
