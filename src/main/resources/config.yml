@@ -14,6 +14,10 @@ over-tax: 20
 leave-tax: 2
 #Time after which the tax for leaving the island expires in s
 leave-tax-timeout: 600
+forced-tax-command: "/warp a"
+blocked-tax-commands:
+  - "/is"
+  - "/spawn"
 
 #block number : percentage
 #block number 0 is the default if the border has not been found

@@ -14,7 +14,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.persistence.PersistentDataType;
 import world.bentobox.bentobox.api.events.island.IslandCreateEvent;
 import world.bentobox.bentobox.api.events.team.TeamLeaveEvent;
@@ -53,6 +55,10 @@ public class EventListener implements Listener {
             }
 
             if(API.getTaxData(player) >= SkyBank.config.getInt("tax-limit")){
+
+                SkyBank.overtaxedPlayersNames.add(player.getUniqueId().toString());
+
+                Bukkit.dispatchCommand(player, SkyBank.config.getString("forced-tax-command"));
 
                 data.set("over-tax", true);
                 data.set("before-sanction-size", API.getIslandSize(player));
@@ -122,7 +128,24 @@ public class EventListener implements Listener {
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
+    }
 
+    @EventHandler
+    public void onPlayerLeave(PlayerQuitEvent event){
+        SkyBank.overtaxedPlayersNames.remove(event.getPlayer().getUniqueId().toString());
+    }
 
+    @EventHandler
+    public void onCommand(PlayerCommandPreprocessEvent event){
+        System.out.println(event.getMessage());
+        if(SkyBank.overtaxedPlayersNames.contains(event.getPlayer().getUniqueId().toString())){
+            if(SkyBank.config.getList("blocked-tax-commands").contains(event.getMessage())){
+                event.setCancelled(true);
+            }
+        }
+        if(SkyBank.loanedPLayersNames.contains(event.getPlayer().getUniqueId().toString()))
+            if(SkyBank.config.getList("loan-blocked-commands").contains(event.getMessage())){
+                event.setCancelled(true);
+            }
     }
 }

@@ -41,6 +41,8 @@ public final class SkyBank extends JavaPlugin {
     public static Permission perms = null;
     public static Chat chat = null;
 
+
+    public static ArrayList<String> overtaxedPlayersNames = new ArrayList<>();
     public static List<Map<?, ?>> loanedPLayers;
     public static ArrayList<String> loanedPLayersNames = new ArrayList<>();
     public static List<Map<?, ?>> playerLogger;
