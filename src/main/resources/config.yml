@@ -92,3 +92,8 @@ multiple-loan:
   - permission: "loan.3.get"
     loans: 3
 
+# ------------------------------ Sign ------------------------------
+sign-bank-name: "[Bank]"
+sign-balance: "balance"
+sign-deposit: "deposit"
+sign-withdraw: "withdraw"

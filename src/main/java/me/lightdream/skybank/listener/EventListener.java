@@ -9,12 +9,16 @@ import me.lightdream.skybank.gui.GUIManager;
 import me.lightdream.skybank.utils.API;
 import me.lightdream.skybank.utils.Language;
 import org.bukkit.Bukkit;
+import org.bukkit.block.BlockState;
+import org.bukkit.block.Sign;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.persistence.PersistentDataType;
@@ -36,9 +40,6 @@ public class EventListener implements Listener {
                 SkyBank.playerLogger.add(API.getIpLogTemplate(player));
             else
                 SkyBank.playerLogger.set(SkyBank.playerLoggerNames.indexOf(player.getUniqueId().toString()), API.getIpLogTemplate(player));
-
-
-
 
             Island island = API.getIsland(player);
             FileConfiguration data = API.loadPlayerDataFile(player, LoadFileType.PLAYER_DATA);
@@ -147,5 +148,70 @@ public class EventListener implements Listener {
             if(SkyBank.config.getList("loan-blocked-commands").contains(event.getMessage())){
                 event.setCancelled(true);
             }
+    }
+
+    @EventHandler
+    public void onInteraction(PlayerInteractEvent event){
+
+        try {
+        Player player = event.getPlayer();
+
+        if(event.getAction().equals(Action.RIGHT_CLICK_BLOCK)){
+            if(event.getClickedBlock() != null){
+                BlockState state = event.getClickedBlock().getState();
+                if (!(state instanceof Sign)) {
+                    return;
+                }
+                Sign sign = (Sign) state;
+                if(sign.getLine(0).equals(SkyBank.config.getString("sign-bank-name"))){
+                    if(sign.getLine(1).equals(SkyBank.config.getString("sign-balance")))
+                        API.sendColoredMessage(player, Language.own_balance.replace("%money%", String.valueOf(API.getBankBalance(player.getUniqueId()))));
+                    else if(sign.getLine(1).equals(SkyBank.config.getString("sign-deposit"))){
+                        int amount;
+
+                        try {
+                            amount = Integer.parseInt(sign.getLine(2));
+                        } catch (NumberFormatException e){
+                            API.sendColoredMessage(player, Language.invalid_number_format);
+                            return;
+                        }
+
+                        if(amount <= API.getBalance(player)){
+                            API.addBankBalance(player, amount);
+                            API.removeBalance(player, amount);
+                            API.sendColoredMessage(player, Language.balance_updated);
+                        }
+                        else {
+                            API.sendColoredMessage(player, Language.not_enough_money);
+                        }
+                    }
+                    else if(sign.getLine(1).equals(SkyBank.config.getString("sign-withdraw"))){
+                        int amount;
+
+                        try {
+                            amount = Integer.parseInt(sign.getLine(2));
+                        } catch (NumberFormatException e){
+                            API.sendColoredMessage(player, Language.invalid_number_format);
+                            return;
+                        }
+
+                        FileConfiguration data = API.loadPlayerDataFile(player, LoadFileType.PLAYER_DATA_READ_ONLY);
+
+                        if(data.getInt("bank-balance") >= amount){
+                            data.set("bank-balance", data.getInt("bank-balance") - amount);
+                            API.savePlayerDataFile(player, data);
+                            API.removeBalance(player, amount);
+                            API.sendColoredMessage(player, Language.balance_updated);
+                        }
+                    }
+                }
+
+            }
+        }
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+
     }
 }

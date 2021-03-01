@@ -319,11 +319,11 @@ public class API {
     }
 
     public static double getBankBalance(Player player) throws FileNotFoundException {
-        return loadPlayerDataFile(player, LoadFileType.PLAYER_DATA_READ_ONLY).getDouble("bank-balance");
+        return loadPlayerDataFile(player, LoadFileType.DEFAULT).getDouble("bank-balance");
     }
 
     public static double getBankBalance(UUID uuid) throws FileNotFoundException {
-        return loadPlayerDataFile(uuid, LoadFileType.PLAYER_DATA_READ_ONLY).getDouble("bank-balance");
+        return loadPlayerDataFile(uuid, LoadFileType.DEFAULT).getDouble("bank-balance");
     }
 
     public static void setBankBalance(Player player, double balance) throws FileNotFoundException {
