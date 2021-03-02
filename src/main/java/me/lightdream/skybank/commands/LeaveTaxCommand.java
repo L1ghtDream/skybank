@@ -2,7 +2,6 @@ package me.lightdream.skybank.commands;
 
 import me.lightdream.skybank.SkyBank;
 import me.lightdream.skybank.enums.LoadFileType;
-import me.lightdream.skybank.exceptions.FileNotFoundException;
 import me.lightdream.skybank.utils.Language;
 import me.lightdream.skybank.utils.API;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -18,14 +17,14 @@ public class LeaveTaxCommand extends BaseCommand{
     }
 
     @Override
-    public boolean run() throws FileNotFoundException {
+    public boolean run() {
 
-        FileConfiguration data = API.loadPlayerDataFile(player, LoadFileType.PLAYER_DATA_READ_ONLY);
+        FileConfiguration data = API.loadPlayerDataFile(player.getUniqueId());
 
         double taxValue = SkyBank.config.getDouble("leave-tax");
-        double taxPrice = API.getBalance(player) * taxValue / 100;
+        double taxPrice = API.getBalance(player.getUniqueId()) * taxValue / 100;
 
-        Island island = API.getIsland(player);
+        Island island = API.getIsland(player.getUniqueId());
 
         if(island != null){
             API.sendColoredMessage(player, Language.not_on_an_island);
@@ -46,32 +45,28 @@ public class LeaveTaxCommand extends BaseCommand{
         else if(args.length == 2){
             if(args[1].equalsIgnoreCase("pay")){
 
-                double balance = API.getBalance(player);
+                double balance = API.getBalance(player.getUniqueId());
 
                 if(balance >= taxValue){
 
                     balance -= taxValue;
 
                     data.set("leave-tax", true);
-                    API.savePlayerDataFile(player, data);
+                    API.savePlayerDataFile(player.getUniqueId(), data);
 
                     new BukkitRunnable(){
                         @Override
                         public void run() {
                             FileConfiguration data = null;
-                            try {
-                                data = API.loadPlayerDataFile(player, LoadFileType.PLAYER_DATA_READ_ONLY);
-                            } catch (FileNotFoundException e) {
-                                SkyBank.logger.severe("Exception where no exception was expected");
-                                e.printStackTrace();
-                            }
+                            data = API.loadPlayerDataFile(player.getUniqueId());
+
                             data.set("leave-tax", false);
-                            API.savePlayerDataFile(player, data);
+                            API.savePlayerDataFile(player.getUniqueId(), data);
 
                         }
                     }.runTaskLater(SkyBank.INSTANCE, SkyBank.config.getInt("leave-tax-timeout") * 20L);
 
-                    API.removeBalance(player, balance);
+                    API.removeBalance(player.getUniqueId(), balance);
 
                     API.sendColoredMessage(player, Language.paid_taxes);
                 }

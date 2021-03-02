@@ -1,7 +1,6 @@
 package me.lightdream.skybank.commands;
 
 import me.lightdream.skybank.enums.LoadFileType;
-import me.lightdream.skybank.exceptions.FileNotFoundException;
 import me.lightdream.skybank.utils.Language;
 import me.lightdream.skybank.utils.API;
 import org.bukkit.Bukkit;
@@ -18,7 +17,7 @@ public class WithdrawCommand extends BaseCommand{
     }
 
     @Override
-    public boolean run() throws FileNotFoundException {
+    public boolean run()  {
 
         if(args.length == 2){
             int amount;
@@ -30,12 +29,12 @@ public class WithdrawCommand extends BaseCommand{
                 return true;
             }
 
-            FileConfiguration data = API.loadPlayerDataFile(player, LoadFileType.PLAYER_DATA_READ_ONLY);
+            FileConfiguration data = API.loadPlayerDataFile(player.getUniqueId());
 
             if(data.getInt("bank-balance") >= amount){
                 data.set("bank-balance", data.getInt("bank-balance") - amount);
-                API.savePlayerDataFile(player, data);
-                API.removeBalance(player, amount);
+                API.savePlayerDataFile(player.getUniqueId(), data);
+                API.removeBalance(player.getUniqueId(), amount);
                 API.sendColoredMessage(player, Language.balance_updated);
             }
         }
@@ -52,18 +51,17 @@ public class WithdrawCommand extends BaseCommand{
 
             OfflinePlayer returnPlayer = Bukkit.getOfflinePlayer(args[2]);
 
-            try{
-
-                FileConfiguration data = API.loadPlayerDataFile(returnPlayer.getUniqueId(), LoadFileType.PLAYER_DATA_READ_ONLY);
-                data.set("bank-balance", data.getInt("bank-balance") - amount);
-
-                API.savePlayerDataFile(player, data);
-                API.sendColoredMessage(player, Language.balance_updated);
-
-            } catch (FileNotFoundException e) {
+            if(!API.checkPlayerFileExistance(returnPlayer.toString())){
                 API.sendColoredMessage(player, Language.player_does_not_exist);
                 return true;
             }
+
+            FileConfiguration data = API.loadPlayerDataFile(returnPlayer.getUniqueId());
+            data.set("bank-balance", data.getInt("bank-balance") - amount);
+
+            API.savePlayerDataFile(player.getUniqueId(), data);
+            API.sendColoredMessage(player, Language.balance_updated);
+
         }
 
         return true;

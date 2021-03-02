@@ -1,7 +1,6 @@
 package me.lightdream.skybank.commands;
 
 import me.lightdream.skybank.enums.LoadFileType;
-import me.lightdream.skybank.exceptions.FileNotFoundException;
 import me.lightdream.skybank.utils.Language;
 import me.lightdream.skybank.utils.API;
 import org.bukkit.Bukkit;
@@ -19,7 +18,7 @@ public class SetBalanceCommand extends BaseCommand {
     }
 
     @Override
-    public boolean run() throws FileNotFoundException {
+    public boolean run() {
 
         int amount;
 
@@ -32,18 +31,16 @@ public class SetBalanceCommand extends BaseCommand {
 
         UUID returnPlayer = Bukkit.getOfflinePlayer(args[2]).getUniqueId();
 
-        try{
-
-            FileConfiguration data = API.loadPlayerDataFile(returnPlayer, LoadFileType.PLAYER_DATA_READ_ONLY);
-            data.set("bank-balance", amount);
-
-            API.savePlayerDataFile(returnPlayer, data);
-            API.sendColoredMessage(player, Language.balance_updated);
-
-        } catch (FileNotFoundException e) {
+        if(!API.checkPlayerFileExistance(returnPlayer.toString())){
             API.sendColoredMessage(player, Language.player_does_not_exist);
             return true;
         }
+
+        FileConfiguration data = API.loadPlayerDataFile(returnPlayer);
+        data.set("bank-balance", amount);
+
+        API.savePlayerDataFile(returnPlayer, data);
+        API.sendColoredMessage(player, Language.balance_updated);
 
         return true;
     }

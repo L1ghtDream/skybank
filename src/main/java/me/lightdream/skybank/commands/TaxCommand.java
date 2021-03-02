@@ -2,7 +2,6 @@ package me.lightdream.skybank.commands;
 
 import me.lightdream.skybank.SkyBank;
 import me.lightdream.skybank.enums.LoadFileType;
-import me.lightdream.skybank.exceptions.FileNotFoundException;
 import me.lightdream.skybank.gui.GUIManager;
 import me.lightdream.skybank.utils.Language;
 import me.lightdream.skybank.utils.API;
@@ -18,21 +17,19 @@ public class TaxCommand extends BaseCommand{
     }
 
     @Override
-    public boolean run() throws FileNotFoundException {
+    public boolean run() {
 
-        //TODO: Fix the non taxing bug
-
-        if(API.getGUIStatus(player)){
+        if(API.getGUIStatus(player.getUniqueId())){
             player.openInventory(GUIManager.getTaxInventory(player));
             return true;
         }
 
-        int tax = API.getTaxData(player);
-        int size = API.getIslandSize(player);
-        double taxValue = API.getTaxValue(player, size);
-        double taxPrice = API.getTaxPrice(player, taxValue);
-        double overtaxValue = API.getPlayerOvertaxValue(player);
-        double overtaxPrice = API.getPlayerOvertaxPrice(player);
+        int tax = API.getTaxData(player.getUniqueId());
+        int size = API.getIslandSize(player.getUniqueId());
+        double taxValue = API.getTaxValue(player.getUniqueId());
+        double taxPrice = API.getTaxPrice(player.getUniqueId());
+        double overtaxValue = API.getPlayerOvertaxValue(player.getUniqueId());
+        double overtaxPrice = API.getPlayerOvertaxPrice(player.getUniqueId());
         double totalPrice = overtaxPrice + taxPrice * tax;
 
         if(size == 0){
@@ -60,8 +57,8 @@ public class TaxCommand extends BaseCommand{
         return true;
     }
 
-    public static void payTax(Player player, double totalPrice) throws FileNotFoundException {
-        double balance = API.getBalance(player);
+    public static void payTax(Player player, double totalPrice) {
+        double balance = API.getBalance(player.getUniqueId());
 
         if(totalPrice <= 0){
             API.sendColoredMessage(player, Language.something_went_wrong);
@@ -70,17 +67,17 @@ public class TaxCommand extends BaseCommand{
         if(balance >= totalPrice){
             balance -= totalPrice;
 
-            FileConfiguration data = API.loadPlayerDataFile(player, LoadFileType.PLAYER_DATA_READ_ONLY);
+            FileConfiguration data = API.loadPlayerDataFile(player.getUniqueId());
             data.set("tax", SkyBank.data.getInt("tax"));
 
             if(data.getBoolean("over-tax")){
-                API.getIsland(player).setProtectionRange(data.getInt("before-sanction-size"));
+                API.getIsland(player.getUniqueId()).setProtectionRange(data.getInt("before-sanction-size"));
                 data.set("before-sanction-size", 0);
                 data.set("over-tax", false);
             }
 
-            API.savePlayerDataFile(player, data);
-            API.removeBalance(player, balance);
+            API.savePlayerDataFile(player.getUniqueId(), data);
+            API.removeBalance(player.getUniqueId(), balance);
             API.sendColoredMessage(player, Language.paid_taxes);
         }
         else{

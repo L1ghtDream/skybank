@@ -1,6 +1,5 @@
 package me.lightdream.skybank.commands;
 
-import me.lightdream.skybank.exceptions.FileNotFoundException;
 import me.lightdream.skybank.utils.Language;
 import me.lightdream.skybank.utils.API;
 import org.bukkit.Bukkit;
@@ -15,7 +14,7 @@ public class DepositCommand extends BaseCommand{
     }
 
     @Override
-    public boolean run() throws FileNotFoundException {
+    public boolean run() {
 
         if(args.length == 2){
             int amount;
@@ -27,9 +26,9 @@ public class DepositCommand extends BaseCommand{
                 return true;
             }
 
-            if(amount <= API.getBalance(player)){
-                API.addBankBalance(player, amount);
-                API.removeBalance(player, amount);
+            if(amount <= API.getBalance(player.getUniqueId())){
+                API.addBankBalance(player.getUniqueId(), amount);
+                API.removeBalance(player.getUniqueId(), amount);
                 API.sendColoredMessage(player, Language.balance_updated);
             }
             else {
@@ -38,16 +37,17 @@ public class DepositCommand extends BaseCommand{
         }
         else if (args.length >= 3) {
             try{
+                if(!API.checkPlayerFileExistance(Bukkit.getOfflinePlayer(args[2]).getUniqueId().toString())){
+                    API.sendColoredMessage(player, Language.player_does_not_exist);
+                    return true;
+                }
+
                 int amount = Integer.parseInt(args[1]);
 
                 API.addBankBalance(Bukkit.getOfflinePlayer(args[2]).getUniqueId(), amount);
                 API.sendColoredMessage(player, Language.balance_updated);
 
-            } catch (FileNotFoundException e) {
-                API.sendColoredMessage(player, Language.player_does_not_exist);
-                return true;
-            }
-            catch (NumberFormatException e) {
+            } catch (NumberFormatException e) {
                 API.sendColoredMessage(player, Language.invalid_number_format);
                 return true;
             }

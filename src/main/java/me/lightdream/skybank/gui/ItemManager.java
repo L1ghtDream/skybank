@@ -18,25 +18,25 @@ public class ItemManager {
     private static final String taxPathLore = "tax-gui.%s.lore";
 
     public static ItemStack getTaxItem(Player player) {
-        return getGenericItem(player, API.processPlaceholder1(player, taxPathName, "tax-item"), API.processPlaceholder2(player, taxPathLore, "tax-item"));
+        return getGenericItem(player, API.processPlaceholder1(player.getUniqueId(), taxPathName, "tax-item"), API.processPlaceholder2(player.getUniqueId(), taxPathLore, "tax-item"));
     }
     public static ItemStack getSizeItem(Player player) {
-        return getGenericItem(player, API.processPlaceholder1(player, taxPathName, "size-item"), API.processPlaceholder2(player, taxPathLore, "size-item"));
+        return getGenericItem(player, API.processPlaceholder1(player.getUniqueId(), taxPathName, "size-item"), API.processPlaceholder2(player.getUniqueId(), taxPathLore, "size-item"));
     }
     public static ItemStack getTaxValueItem(Player player) {
-        return getGenericItem(player, API.processPlaceholder1(player, taxPathName, "tax-value-item"), API.processPlaceholder2(player, taxPathLore, "tax-value-item"));
+        return getGenericItem(player, API.processPlaceholder1(player.getUniqueId(), taxPathName, "tax-value-item"), API.processPlaceholder2(player.getUniqueId(), taxPathLore, "tax-value-item"));
     }
     public static ItemStack getTaxPriceItem(Player player) {
-        return getGenericItem(player, API.processPlaceholder1(player, taxPathName, "tax-price-item"), API.processPlaceholder2(player, taxPathLore, "tax-price-item"));
+        return getGenericItem(player, API.processPlaceholder1(player.getUniqueId(), taxPathName, "tax-price-item"), API.processPlaceholder2(player.getUniqueId(), taxPathLore, "tax-price-item"));
     }
     public static ItemStack getOverTaxValueItem(Player player) {
-        return getGenericItem(player, API.processPlaceholder1(player, taxPathName, "overtax-value-item"), API.processPlaceholder2(player, taxPathLore, "overtax-value-item"));
+        return getGenericItem(player, API.processPlaceholder1(player.getUniqueId(), taxPathName, "overtax-value-item"), API.processPlaceholder2(player.getUniqueId(), taxPathLore, "overtax-value-item"));
     }
     public static ItemStack getOverTaxPriceItem(Player player) {
-        return getGenericItem(player, API.processPlaceholder1(player, taxPathName, "overtax-price-item"), API.processPlaceholder2(player, taxPathLore, "tax-item"));
+        return getGenericItem(player, API.processPlaceholder1(player.getUniqueId(), taxPathName, "overtax-price-item"), API.processPlaceholder2(player.getUniqueId(), taxPathLore, "tax-item"));
     }
     public static ItemStack getTotalTaxPrice(Player player) {
-       return setNamespaceKey(getGenericItem(player, API.processPlaceholder1(player, taxPathName, "total-item"), API.processPlaceholder2(player, taxPathLore, "total-item")), SkyBank.payLoan);
+       return setNamespaceKey(getGenericItem(player, API.processPlaceholder1(player.getUniqueId(), taxPathName, "total-item"), API.processPlaceholder2(player.getUniqueId(), taxPathLore, "total-item")), SkyBank.payLoan);
     }
 
 

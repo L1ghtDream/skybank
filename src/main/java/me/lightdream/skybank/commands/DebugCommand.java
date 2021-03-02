@@ -1,7 +1,6 @@
 package me.lightdream.skybank.commands;
 
 import me.lightdream.skybank.SkyBank;
-import me.lightdream.skybank.exceptions.FileNotFoundException;
 
 public class DebugCommand extends BaseCommand{
 
@@ -12,7 +11,7 @@ public class DebugCommand extends BaseCommand{
     }
 
     @Override
-    public boolean run() throws FileNotFoundException {
+    public boolean run() {
 
         SkyBank.data.set("taxes", SkyBank.data.getInt("taxes") + 1);
         System.out.println(SkyBank.data.getInt("taxes"));

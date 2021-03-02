@@ -1,7 +1,6 @@
 package me.lightdream.skybank.commands;
 
 import me.lightdream.skybank.SkyBank;
-import me.lightdream.skybank.exceptions.FileNotFoundException;
 import me.lightdream.skybank.utils.Language;
 import me.lightdream.skybank.utils.API;
 
@@ -18,13 +17,13 @@ public class InterestCommand  extends BaseCommand{
     }
 
     @Override
-    public boolean run() throws FileNotFoundException {
+    public boolean run() {
 
         List<Map<?, ?>> list = SkyBank.config.getMapList("interests");
         Map<?, ?> map = list.get(0);
 
-        double interestPercent = API.getInterestPercent(player, list);
-        double interestValue = API.getInterest(player, interestPercent);
+        double interestPercent = API.getInterestPercent(player.getUniqueId(), list);
+        double interestValue = API.getInterest(player.getUniqueId(), interestPercent);
 
         API.sendColoredMessage(player, Language.interest_name.replace("%name%", String.valueOf(map.get("name"))));
         API.sendColoredMessage(player, Language.interest_percent.replace("%interest%", String.valueOf(interestPercent)));

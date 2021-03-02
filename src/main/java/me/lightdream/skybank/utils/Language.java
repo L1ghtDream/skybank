@@ -2,7 +2,6 @@ package me.lightdream.skybank.utils;
 
 import me.lightdream.skybank.SkyBank;
 import me.lightdream.skybank.enums.LoadFileType;
-import me.lightdream.skybank.exceptions.FileNotFoundException;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 
@@ -58,59 +57,54 @@ public class Language {
 
     public static void loadLang(){
 
-        try {
-            lang = API.loadFile("lang.yml", LoadFileType.DEFAULT);
+        lang = API.loadFile("lang.yml", LoadFileType.DEFAULT);
 
-            must_be_ingame                                        = lang.getString("must_be_ingame");
-            no_permission_command                                 = lang.getString("no_permission_command");
-            wrong_usage_command                                   = lang.getString("wrong_usage_command");
-            no_island_found                                       = lang.getString("no_island_found");
-            unpaid_taxes                                          = lang.getString("unpaid_taxes");
-            island_size                                           = lang.getString("island_size");
-            tax_value                                             = lang.getString("tax_value");
-            tax_price                                             = lang.getString("tax_price");
-            overtax_percent                                       = lang.getString("overtax_percent");
-            overtax_price                                         = lang.getString("overtax_price");
-            total_price                                           = lang.getString("total_price");
-            not_enough_money                                      = lang.getString("not_enough_money");
-            pay_tax_to_leave_island                               = lang.getString("pay_tax_to_leave_island");
-            use_tax_pay_confirm                                   = lang.getString("use_tax_pay_confirm");
-            leave_tax_percent                                     = lang.getString("leave_tax_percent");
-            leave_tax_value                                       = lang.getString("leave_tax_value");
-            already_have_leave_tax                                = lang.getString("already_have_leave_tax");
-            paid_taxes                                            = lang.getString("paid_taxes");
-            invalid_number_format                                 = lang.getString("invalid_number_format");
-            own_balance                                           = lang.getString("own_balance");
-            others_balance                                        = lang.getString("others_balance");
-            player_does_not_exist                                 = lang.getString("player_does_not_exist");
-            exception_where_no_exception_was_expected_kick_reason = lang.getString("exception_where_no_exception_was_expected_kick_reason");
-            balance_updated                                       = lang.getString("balance_updated");
-            interest_name                                         = lang.getString("interest_name");
-            interest_percent                                      = lang.getString("interest_percent");
-            interest_range                                        = lang.getString("interest_range");
-            estimated_interest                                    = lang.getString("estimated_interest");
-            do_not_have_permission_loan                           = lang.getString("do_not_have_permission_loan");
-            do_not_have_enough_hours_played_loan                  = lang.getString("do_not_have_enough_hours_played_loan");
-            available_loans                                       = lang.getString("available_loans");
-            no_available_loans                                    = lang.getString("no_available_loans");
-            loan_listing                                          = lang.getString("loan_listing");
-            loan_available                                        = lang.getString("loan_available");
-            loan_unavailable                                      = lang.getString("loan_unavailable");
-            not_on_an_island                                      = lang.getString("not_on_an_island");
-            size_0_island                                         = lang.getString("size_0_island");
-            something_went_wrong                                  = lang.getString("something_went_wrong");
-            loan_does_not_exist                                   = lang.getString("loan_does_not_exist");
-            can_not_take_loan                                     = lang.getString("can_not_take_loan");
-            loan_already_taken                                    = lang.getString("loan_already_taken");
-            unpaid_loans                                          = lang.getString("unpaid_loans");
-            loan_paid                                             = lang.getString("loan_paid");
-            gui_status_updated                                    = lang.getString("gui_status_updated");
+        must_be_ingame                                        = lang.getString("must_be_ingame");
+        no_permission_command                                 = lang.getString("no_permission_command");
+        wrong_usage_command                                   = lang.getString("wrong_usage_command");
+        no_island_found                                       = lang.getString("no_island_found");
+        unpaid_taxes                                          = lang.getString("unpaid_taxes");
+        island_size                                           = lang.getString("island_size");
+        tax_value                                             = lang.getString("tax_value");
+        tax_price                                             = lang.getString("tax_price");
+        overtax_percent                                       = lang.getString("overtax_percent");
+        overtax_price                                         = lang.getString("overtax_price");
+        total_price                                           = lang.getString("total_price");
+        not_enough_money                                      = lang.getString("not_enough_money");
+        pay_tax_to_leave_island                               = lang.getString("pay_tax_to_leave_island");
+        use_tax_pay_confirm                                   = lang.getString("use_tax_pay_confirm");
+        leave_tax_percent                                     = lang.getString("leave_tax_percent");
+        leave_tax_value                                       = lang.getString("leave_tax_value");
+        already_have_leave_tax                                = lang.getString("already_have_leave_tax");
+        paid_taxes                                            = lang.getString("paid_taxes");
+        invalid_number_format                                 = lang.getString("invalid_number_format");
+        own_balance                                           = lang.getString("own_balance");
+        others_balance                                        = lang.getString("others_balance");
+        player_does_not_exist                                 = lang.getString("player_does_not_exist");
+        exception_where_no_exception_was_expected_kick_reason = lang.getString("exception_where_no_exception_was_expected_kick_reason");
+        balance_updated                                       = lang.getString("balance_updated");
+        interest_name                                         = lang.getString("interest_name");
+        interest_percent                                      = lang.getString("interest_percent");
+        interest_range                                        = lang.getString("interest_range");
+        estimated_interest                                    = lang.getString("estimated_interest");
+        do_not_have_permission_loan                           = lang.getString("do_not_have_permission_loan");
+        do_not_have_enough_hours_played_loan                  = lang.getString("do_not_have_enough_hours_played_loan");
+        available_loans                                       = lang.getString("available_loans");
+        no_available_loans                                    = lang.getString("no_available_loans");
+        loan_listing                                          = lang.getString("loan_listing");
+        loan_available                                        = lang.getString("loan_available");
+        loan_unavailable                                      = lang.getString("loan_unavailable");
+        not_on_an_island                                      = lang.getString("not_on_an_island");
+        size_0_island                                         = lang.getString("size_0_island");
+        something_went_wrong                                  = lang.getString("something_went_wrong");
+        loan_does_not_exist                                   = lang.getString("loan_does_not_exist");
+        can_not_take_loan                                     = lang.getString("can_not_take_loan");
+        loan_already_taken                                    = lang.getString("loan_already_taken");
+        unpaid_loans                                          = lang.getString("unpaid_loans");
+        loan_paid                                             = lang.getString("loan_paid");
+        gui_status_updated                                    = lang.getString("gui_status_updated");
 
-        } catch (FileNotFoundException e) {
-            SkyBank.logger.severe("Exception where no exception was expected");
-            e.printStackTrace();
-            Bukkit.getServer().getPluginManager().disablePlugin(SkyBank.INSTANCE);
-        }
+
 
     }
 

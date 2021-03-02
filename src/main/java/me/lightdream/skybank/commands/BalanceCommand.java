@@ -1,8 +1,7 @@
 package me.lightdream.skybank.commands;
 
-import me.lightdream.skybank.exceptions.FileNotFoundException;
-import me.lightdream.skybank.utils.Language;
 import me.lightdream.skybank.utils.API;
+import me.lightdream.skybank.utils.Language;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 
@@ -19,21 +18,14 @@ public class BalanceCommand extends BaseCommand{
     }
 
     @Override
-    public boolean run() throws FileNotFoundException {
+    public boolean run() {
 
         if(args.length == 1){
-            API.sendColoredMessage(player, Language.own_balance.replace("%money%", String.valueOf(API.getBankBalance(player))));
+            API.sendColoredMessage(player, Language.own_balance.replace("%money%", String.valueOf(API.getBankBalance(player.getUniqueId()))));
         }
         else if (args.length >= 2){
-
             OfflinePlayer returnPlayer = Bukkit.getOfflinePlayer(args[1]);
-
-            try{
-                API.sendColoredMessage(player, Language.others_balance.replace("%money%", String.valueOf(API.getBankBalance(returnPlayer.getUniqueId()))).replace("%player%", returnPlayer.getName()));
-            } catch (FileNotFoundException e) {
-                API.sendColoredMessage(player, Language.player_does_not_exist);
-                return true;
-            }
+            API.sendColoredMessage(player, Language.others_balance.replace("%money%", String.valueOf(API.getBankBalance(returnPlayer.getUniqueId()))).replace("%player%", returnPlayer.getName()));
         }
 
         return true;

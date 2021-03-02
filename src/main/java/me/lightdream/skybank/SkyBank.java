@@ -3,7 +3,6 @@ package me.lightdream.skybank;
 import me.lightdream.skybank.commands.CommandHandler;
 import me.lightdream.skybank.dependencies.PAPI;
 import me.lightdream.skybank.enums.LoadFileType;
-import me.lightdream.skybank.exceptions.FileNotFoundException;
 import me.lightdream.skybank.listener.EventListener;
 import me.lightdream.skybank.utils.Language;
 import me.lightdream.skybank.utils.API;
@@ -62,73 +61,62 @@ public final class SkyBank extends JavaPlugin {
         getLoan = new NamespacedKey(this,"getLoan");
         payLoan = new NamespacedKey(this,"payLoan");
 
-
-        try {
-
-            if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
-                new PAPI().register();
-            } else {
-                System.out.println("Could not find PlaceholderAPI! This plugin is required.");
-                Bukkit.getPluginManager().disablePlugin(this);
-            }
-
-            //Setup instancing
-            logger = super.getLogger();
-            bentoBox = BentoBox.getInstance();
-            INSTANCE = this;
-
-            //Setup BSkyBlock
-            Optional<Addon> addon = bentoBox.getAddonsManager().getAddonByName("BSkyBlock");
-            if(!addon.isPresent()){
-                logger.severe("BSkyBlock Addon has not been found");
-            }
-            skyblock = (GameModeAddon) addon.get();
-
-            if (!setupEconomy()) {
-                logger.severe(String.format("[%s] - Disabled due to no Vault dependency found!", getDescription().getName()));
-                getServer().getPluginManager().disablePlugin(this);
-                return;
-            }
-            setupPermissions();
-            //setupChat();
-            Language.loadLang();
-
-            //Setup data files
-            config = API.loadFile("config.yml", LoadFileType.DEFAULT);
-            data = API.loadFile("data.yml", LoadFileType.DEFAULT);
-            ipLog = API.loadFile("ip.yml", LoadFileType.DEFAULT);
-            guiConfig = API.loadFile("gui.yml", LoadFileType.DEFAULT);
-
-            //Setup data.yml
-            loanedPLayers = API.loadFile("data.yml", LoadFileType.DEFAULT).getMapList("loaned-players");
-
-            for(Map<?, ?> map : loanedPLayers)
-                loanedPLayersNames.add((String) ((List<String>) map.get("uuid")).get(0));
-
-            //Setup ip.yml
-            playerLogger = ipLog.getMapList("log");
-
-            for(Map<?, ?> map : playerLogger)
-                playerLoggerNames.add((String) map.get("uuid"));
-
-            //Setting variable of external classes
-            Runnable.taxTime = config.getInt("tax-time") * 60 * 20;
-            Runnable.interestTime = config.getInt("interest-time") * 60 * 20;
-            Runnable.loanTime = config.getInt("loanTime-time") * 60 * 20;
-
-            //Command setup
-            commandHandler = new CommandHandler(this);
-            getServer().getPluginManager().registerEvents(new EventListener(), this);
-
-            Runnable.init();
-
-        } catch (FileNotFoundException e) {
-            SkyBank.logger.severe("Exception where no exception was expected");
-            e.printStackTrace();
-            Bukkit.getServer().getPluginManager().disablePlugin(SkyBank.INSTANCE);
+        if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
+            new PAPI().register();
+        } else {
+            System.out.println("Could not find PlaceholderAPI! This plugin is required.");
+            Bukkit.getPluginManager().disablePlugin(this);
         }
 
+        //Setup instancing
+        logger = super.getLogger();
+        bentoBox = BentoBox.getInstance();
+        INSTANCE = this;
 
+        //Setup BSkyBlock
+        Optional<Addon> addon = bentoBox.getAddonsManager().getAddonByName("BSkyBlock");
+        if(!addon.isPresent()){
+            logger.severe("BSkyBlock Addon has not been found");
+        }
+        skyblock = (GameModeAddon) addon.get();
+
+        if (!setupEconomy()) {
+            logger.severe(String.format("[%s] - Disabled due to no Vault dependency found!", getDescription().getName()));
+            getServer().getPluginManager().disablePlugin(this);
+            return;
+        }
+        setupPermissions();
+        //setupChat();
+        Language.loadLang();
+
+        //Setup data files
+        config = API.loadFile("config.yml", LoadFileType.DEFAULT);
+        data = API.loadFile("data.yml", LoadFileType.DEFAULT);
+        ipLog = API.loadFile("ip.yml", LoadFileType.DEFAULT);
+        guiConfig = API.loadFile("gui.yml", LoadFileType.DEFAULT);
+
+        //Setup data.yml
+        loanedPLayers = API.loadFile("data.yml", LoadFileType.DEFAULT).getMapList("loaned-players");
+
+        for(Map<?, ?> map : loanedPLayers)
+            loanedPLayersNames.add((String) ((List<String>) map.get("uuid")).get(0));
+
+        //Setup ip.yml
+        playerLogger = ipLog.getMapList("log");
+
+        for(Map<?, ?> map : playerLogger)
+            playerLoggerNames.add((String) map.get("uuid"));
+
+        //Setting variable of external classes
+        Runnable.taxTime = config.getInt("tax-time") * 60 * 20;
+        Runnable.interestTime = config.getInt("interest-time") * 60 * 20;
+        Runnable.loanTime = config.getInt("loanTime-time") * 60 * 20;
+
+        //Command setup
+        commandHandler = new CommandHandler(this);
+        getServer().getPluginManager().registerEvents(new EventListener(), this);
+
+        Runnable.init();
 
     }
 

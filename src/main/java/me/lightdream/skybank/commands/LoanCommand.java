@@ -1,7 +1,6 @@
 package me.lightdream.skybank.commands;
 
 import me.lightdream.skybank.SkyBank;
-import me.lightdream.skybank.exceptions.FileNotFoundException;
 import me.lightdream.skybank.utils.API;
 import me.lightdream.skybank.utils.Language;
 
@@ -23,13 +22,13 @@ public class LoanCommand extends BaseCommand{
     }
 
     @Override
-    public boolean run() throws FileNotFoundException {
+    public boolean run() {
 
         if(args.length == 1) {
 
             ArrayList<String> loans = API.getLoans();
 
-            API.sendColoredMessage(player, Language.unpaid_loans.replace("%money%", String.valueOf(API.getAmountToPayForLoans(player))));
+            API.sendColoredMessage(player, Language.unpaid_loans.replace("%money%", String.valueOf(API.getAmountToPayForLoans(player.getUniqueId()))));
 
             if(loans.size() == 0){
                 API.sendColoredMessage(player, Language.no_available_loans);
@@ -39,12 +38,12 @@ public class LoanCommand extends BaseCommand{
             API.sendColoredMessage(player, Language.available_loans);
 
             for(String name : loans){
-                API.sendColoredMessage(player, Language.loan_listing.replace("%loan%", name).replace("%status%", API.getBeautifiedLoanStatus(player, name)));
+                API.sendColoredMessage(player, Language.loan_listing.replace("%loan%", name).replace("%status%", API.getBeautifiedLoanStatus(player.getUniqueId(), name)));
             }
         }
         if (args.length >= 2) {
             if(args[1].equalsIgnoreCase("pay")){
-                double totalBalance = API.getBalance(player) + API.getBankBalance(player);
+                double totalBalance = API.getBalance(player.getUniqueId()) + API.getBankBalance(player.getUniqueId());
                 if(args.length == 2){
                     sendHelpLine();
                     return true;
@@ -52,12 +51,12 @@ public class LoanCommand extends BaseCommand{
                 try{
                     int amount = Integer.parseInt(args[2]);
                     if(totalBalance >= amount){
-                        API.removeLoan(player, amount);
-                        double  var1 = Math.min(amount, API.getBankBalance(player));
+                        API.removeLoan(player.getUniqueId(), amount);
+                        double  var1 = Math.min(amount, API.getBankBalance(player.getUniqueId()));
                         amount -= var1;
 
-                        API.removeBankBalance(player, var1);
-                        API.removeBalance(player, amount);
+                        API.removeBankBalance(player.getUniqueId(), var1);
+                        API.removeBalance(player.getUniqueId(), amount);
 
                         API.sendColoredMessage(player, Language.loan_paid);
                     }
@@ -94,17 +93,17 @@ public class LoanCommand extends BaseCommand{
                         }
                     }
 
-                    if(API.getLoanStatus(player, args[1])){
+                    if(API.getLoanStatus(player.getUniqueId(), args[1])){
                         if(canGetLoan){
-                            if(API.getHoursPlayed(player) >= Double.parseDouble(String.valueOf(loan.get("hours-needed")))){
+                            if(API.getHoursPlayed(player.getUniqueId()) >= Double.parseDouble(String.valueOf(loan.get("hours-needed")))){
                                 if(!SkyBank.loanedPLayersNames.contains(String.valueOf(player.getUniqueId()))){
                                     SkyBank.loanedPLayersNames.add(String.valueOf(player.getUniqueId()));
-                                    loanedPLayers.add(API.getBankLoanTemplate(player, Double.parseDouble(String.valueOf(loan.get("money"))), Collections.singletonList((String) loan.get("name"))));
+                                    loanedPLayers.add(API.getBankLoanTemplate(player.getUniqueId(), Double.parseDouble(String.valueOf(loan.get("money"))), Collections.singletonList((String) loan.get("name"))));
                                 }
                                 else {
-                                    loanedPLayers.set(index, API.getBankLoanTemplate(player, Double.parseDouble(String.valueOf(loan.get("money"))), (String) loan.get("name"), loanedPLayers.get(index)));
+                                    loanedPLayers.set(index, API.getBankLoanTemplate(player.getUniqueId(), Double.parseDouble(String.valueOf(loan.get("money"))), (String) loan.get("name"), loanedPLayers.get(index)));
                                 }
-                                API.addBankBalance(player, Double.parseDouble(String.valueOf(loan.get("money"))));
+                                API.addBankBalance(player.getUniqueId(), Double.parseDouble(String.valueOf(loan.get("money"))));
                                 API.sendColoredMessage(player, Language.balance_updated);
                             }
                             else

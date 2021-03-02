@@ -1,9 +1,8 @@
 package me.lightdream.skybank.commands;
 
 import me.lightdream.skybank.SkyBank;
-import me.lightdream.skybank.exceptions.FileNotFoundException;
-import me.lightdream.skybank.utils.Language;
 import me.lightdream.skybank.utils.API;
+import me.lightdream.skybank.utils.Language;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.permissions.PermissionDefault;
@@ -44,19 +43,13 @@ public abstract class BaseCommand {
         else if (argLength >= args.length)
             API.sendColoredMessage(sender, Language.wrong_usage_command + " " + sendHelpLine());
         else{
-            try {
-                return run();
-            }
-            catch (FileNotFoundException e) {
-                SkyBank.logger.severe("Exception where no exception was expected");
-                e.printStackTrace();
-            }
+            return run();
         }
 
         return true;
     }
 
-    public abstract boolean run() throws FileNotFoundException;
+    public abstract boolean run();
 
     public String sendHelpLine() {
         String usage = this.usage.replaceAll("<", "&7&l<&f").replaceAll(">", "&7&l>");
