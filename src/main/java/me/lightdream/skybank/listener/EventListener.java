@@ -1,6 +1,8 @@
 package me.lightdream.skybank.listener;
 
 import me.lightdream.skybank.SkyBank;
+import me.lightdream.skybank.commands.DepositCommand;
+import me.lightdream.skybank.commands.LoanCommand;
 import me.lightdream.skybank.commands.TaxCommand;
 import me.lightdream.skybank.enums.LoadFileType;
 import me.lightdream.skybank.enums.TaxType;
@@ -25,6 +27,8 @@ import world.bentobox.bentobox.api.events.island.IslandCreateEvent;
 import world.bentobox.bentobox.api.events.team.TeamLeaveEvent;
 import world.bentobox.bentobox.database.objects.Island;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 public class EventListener implements Listener {
@@ -34,13 +38,18 @@ public class EventListener implements Listener {
 
         Player player = event.getPlayer();
 
-        if(!SkyBank.playerLoggerNames.contains(player.getUniqueId().toString()))
-            SkyBank.playerLogger.add(API.getIpLogTemplate(player.getUniqueId()));
-        else
-            SkyBank.playerLogger.set(SkyBank.playerLoggerNames.indexOf(player.getUniqueId().toString()), API.getIpLogTemplate(player.getUniqueId()));
+        if(SkyBank.loanedPLayersNames.contains(player.getUniqueId().toString())){
+            if(!SkyBank.playerLogger.contains(player.getUniqueId().toString()))
+                SkyBank.playerLogger.add(API.getIpLogTemplate(player.getUniqueId()));
+            else
+                SkyBank.playerLogger.set(SkyBank.playerLoggerNames.indexOf(player.getUniqueId().toString()), API.getIpLogTemplate(player.getUniqueId()));
+
+        }
 
         Island island = API.getIsland(player.getUniqueId());
         FileConfiguration data = API.loadPlayerDataFile(player.getUniqueId());
+
+        TaxCommand.payTax(player);
 
         if(island == null)
             return;
@@ -101,9 +110,41 @@ public class EventListener implements Listener {
 
     @EventHandler
     public void onInventoryClick(InventoryClickEvent event){
+
+        Player player = (Player) event.getWhoClicked();
+
         if(GUIManager.protectedInventories.contains(event.getView().getTitle())){
             if(event.getCurrentItem().getItemMeta().getPersistentDataContainer().has(SkyBank.payTax, PersistentDataType.STRING))
-                TaxCommand.payTax((Player) event.getWhoClicked(), API.getTaxTotalPrice(event.getWhoClicked().getUniqueId()));
+                TaxCommand.payTax(player);
+            else if (event.getCurrentItem().getItemMeta().getPersistentDataContainer().has(SkyBank.taxGUI, PersistentDataType.STRING))
+                player.openInventory(GUIManager.getTaxGUI(player));
+            else if (event.getCurrentItem().getItemMeta().getPersistentDataContainer().has(SkyBank.loan, PersistentDataType.STRING)){
+                List<String> lore = event.getCurrentItem().getItemMeta().getLore();
+                String[] var1 = lore.get(lore.size()-1).split("\\|");
+
+                LoanCommand.getLoan(player, var1[var1.length-1]);
+            }
+            else if (event.getCurrentItem().getItemMeta().getPersistentDataContainer().has(SkyBank.loanGUI, PersistentDataType.STRING))
+                player.openInventory(GUIManager.getLoanGUI(player));
+            else if (event.getCurrentItem().getItemMeta().getPersistentDataContainer().has(SkyBank.bankGUI, PersistentDataType.STRING))
+                player.openInventory(GUIManager.getBankGUI(player));
+            else if (event.getCurrentItem().getItemMeta().getPersistentDataContainer().has(SkyBank.deposit, PersistentDataType.STRING)){
+                List<String> lore = event.getCurrentItem().getItemMeta().getLore();
+                String[] var1 = lore.get(lore.size()-1).split("\\|");
+
+                DepositCommand.deposit(player, var1[var1.length-1]);
+            }
+            else if (event.getCurrentItem().getItemMeta().getPersistentDataContainer().has(SkyBank.withdraw, PersistentDataType.STRING)){
+                List<String> lore = event.getCurrentItem().getItemMeta().getLore();
+                String[] var1 = lore.get(lore.size()-1).split("\\|");
+
+                DepositCommand.deposit(player, var1[var1.length-1]);
+            }
+
+
+
+
+
             event.setCancelled(true);
         }
     }

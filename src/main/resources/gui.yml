@@ -1,37 +1,110 @@
+main-gui:
+  title: "SkyBank"
+  tax-gui:
+    position: 0
+    display-name: "Taxes"
+    material: "BOOK"
+    lore:
+      - "Description here [Placeholders supported]"
+  loan-gui:
+    position: 1
+    display-name: "Loans"
+    material: "BOOK"
+    lore:
+      - "Description here [Placeholders supported]"
+  bank-gui:
+    position: 2
+    display-name: "Bank"
+    material: "BOOK"
+    lore:
+      - "Description here [Placeholders supported]"
+
 tax-gui:
   title: "Tax"
   tax-item:
     position: 0
     display-name: "Taxes"
+    material: "BOOK"
     lore:
       - "%skybank_tax_count%"
   size-item:
     position: 1
     display-name: "Size"
+    material: "BOOK"
     lore:
       - "%skybank_island_size%"
   tax-value-item:
     position: 2
     display-name: "Tax Percent"
+    material: "BOOK"
     lore:
       - "%skybank_tax_value%"
   tax-price-item:
     position: 3
     display-name: "Tax Price"
+    material: "BOOK"
     lore:
       - "%skybank_tax_price%"
   overtax-value-item:
     position: 4
     display-name: "OverTaxes Percent"
+    material: "BOOK"
     lore:
       - "%skybank_overtax_value%"
   overtax-price-item:
     position: 5
     display-name: "OverTaxes Price"
+    material: "BOOK"
     lore:
       - "%skybank_overtax_price%"
   total-item:
     position: 6
     display-name: "Total Price"
+    material: "BOOK"
     lore:
       - "%skybank_tax_total_price%"
+
+bank-gui:
+  title: "Bank"
+  deposit-material: "BOOK"
+  deposit-name: "Deposit {money}"
+  deposit-lore:
+    - "Description here [Placeholder supported]"
+    - "|{amount}" #[!] WARNING [!] this is important to be here do NOT remove it. You can make it black but do NOT remove it. Place the color before the '|'.
+  deposit-positions:
+    - "0"
+    - "1"
+    - "2"
+  deposit-amounts:
+    - "100"
+    - "1000"
+    - "10000"
+  withdraw-material: "BOOK"
+  withdraw-name: "Withdraw {money}"
+  withdraw-lore:
+    - "Description here [Placeholder supported]"
+    - "|{amount}" #[!] WARNING [!] this is important to be here do NOT remove it. You can make it black but do NOT remove it. Place the color before the '|'.
+  withdraw-positions:
+    - "3"
+    - "4"
+    - "5"
+  withdraw-amounts:
+    - "100"
+    - "1000"
+    - "10000"
+
+loan-gui:
+  title: "Loans"
+  material: "BOOK"
+  name: "Loan {loan}"
+  lore:
+    - "Description here [Placeholder supported]"
+    - "|{loan}" #[!] WARNING [!] this is important to be here do NOT remove it. You can make it black but do NOT remove it. Place the color before the '|'.
+  positions:
+    - "0"
+    - "1"
+    - "2"
+  loans:
+    - "Bank-Loan-1"
+    - "Bank-Loan-2"
+    - "Bank-Loan-3"

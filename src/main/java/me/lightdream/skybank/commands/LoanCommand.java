@@ -3,6 +3,7 @@ package me.lightdream.skybank.commands;
 import me.lightdream.skybank.SkyBank;
 import me.lightdream.skybank.utils.API;
 import me.lightdream.skybank.utils.Language;
+import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -70,65 +71,64 @@ public class LoanCommand extends BaseCommand{
                 return true;
             }
 
-            Map<?, ?> loan = API.getBankLoan(args[1]);
+            getLoan(player, args[1]);
 
-            if(loan != null){
-                if(player.hasPermission((String) loan.get("permission"))){
-
-                    boolean canGetLoan = false;
-
-                    int index = loanedPLayersNames.indexOf(player.getUniqueId().toString());
-                    //System.out.println(index);
-
-                    List<Map<?, ?>> multipleLoansPermission = SkyBank.config.getMapList("multiple-loan");
-
-                    for(int i = multipleLoansPermission.size() - 1; i >= 0; i--){
-                        if(player.hasPermission((String) multipleLoansPermission.get(i).get("permission"))){
-                            if(index == -1){
-                                canGetLoan = (int) multipleLoansPermission.get(i).get("loans") != 0;
-                                break;
-                            }
-                            canGetLoan = (int) multipleLoansPermission.get(i).get("loans") > ((List<String>) loanedPLayers.get(index).get("loan")).size();
-                            break;
-                        }
-                    }
-
-                    if(API.getLoanStatus(player.getUniqueId(), args[1])){
-                        if(canGetLoan){
-                            if(API.getHoursPlayed(player.getUniqueId()) >= Double.parseDouble(String.valueOf(loan.get("hours-needed")))){
-                                if(!SkyBank.loanedPLayersNames.contains(String.valueOf(player.getUniqueId()))){
-                                    SkyBank.loanedPLayersNames.add(String.valueOf(player.getUniqueId()));
-                                    loanedPLayers.add(API.getBankLoanTemplate(player.getUniqueId(), Double.parseDouble(String.valueOf(loan.get("money"))), Collections.singletonList((String) loan.get("name"))));
-                                }
-                                else {
-                                    loanedPLayers.set(index, API.getBankLoanTemplate(player.getUniqueId(), Double.parseDouble(String.valueOf(loan.get("money"))), (String) loan.get("name"), loanedPLayers.get(index)));
-                                }
-                                API.addBankBalance(player.getUniqueId(), Double.parseDouble(String.valueOf(loan.get("money"))));
-                                API.sendColoredMessage(player, Language.balance_updated);
-                            }
-                            else
-                                API.sendColoredMessage(player, Language.do_not_have_enough_hours_played_loan);
-                        }
-                        else
-                            API.sendColoredMessage(player, Language.can_not_take_loan);
-                    }
-                    else
-                        API.sendColoredMessage(player, Language.loan_already_taken);
-
-
-                }
-                else
-                    API.sendColoredMessage(player, Language.do_not_have_permission_loan);
-            }
-            else {
-                API.sendColoredMessage(player, Language.loan_does_not_exist);
-            }
 
 
         }
 
 
         return true;
+    }
+
+    public static void getLoan(Player player, String loanName){
+        Map<?, ?> loan = API.getBankLoan(loanName);
+
+        if(loan != null){
+            if(player.hasPermission((String) loan.get("permission"))){
+
+                boolean canGetLoan = false;
+
+                int index = loanedPLayersNames.indexOf(player.getUniqueId().toString());
+
+                List<Map<?, ?>> multipleLoansPermission = SkyBank.config.getMapList("multiple-loan");
+
+                for(int i = multipleLoansPermission.size() - 1; i >= 0; i--){
+                    if(player.hasPermission((String) multipleLoansPermission.get(i).get("permission"))){
+                        if(index == -1){
+                            canGetLoan = (int) multipleLoansPermission.get(i).get("loans") != 0;
+                            break;
+                        }
+                        canGetLoan = (int) multipleLoansPermission.get(i).get("loans") > ((List<String>) loanedPLayers.get(index).get("loan")).size();
+                        break;
+                    }
+                }
+
+                if(API.getLoanStatus(player.getUniqueId(), loanName)){
+                    if(canGetLoan){
+                        if(API.getHoursPlayed(player.getUniqueId()) >= Double.parseDouble(String.valueOf(loan.get("hours-needed")))){
+                            if(!SkyBank.loanedPLayersNames.contains(String.valueOf(player.getUniqueId()))){
+                                SkyBank.loanedPLayersNames.add(String.valueOf(player.getUniqueId()));
+                                loanedPLayers.add(API.getBankLoanTemplate(player.getUniqueId(), Double.parseDouble(String.valueOf(loan.get("money"))), Collections.singletonList((String) loan.get("name"))));
+                            }
+                            else {
+                                loanedPLayers.set(index, API.getBankLoanTemplate(player.getUniqueId(), Double.parseDouble(String.valueOf(loan.get("money"))), (String) loan.get("name"), loanedPLayers.get(index)));
+                            }
+                            API.addBankBalance(player.getUniqueId(), Double.parseDouble(String.valueOf(loan.get("money"))));
+                            API.sendColoredMessage(player, Language.balance_updated);
+                            API.logAction(API.processLogAction(player, String.valueOf(loan.get("money"))));
+
+                        }
+                        else API.sendColoredMessage(player, Language.do_not_have_enough_hours_played_loan);
+                    }
+                    else API.sendColoredMessage(player, Language.can_not_take_loan);
+                }
+                else API.sendColoredMessage(player, Language.loan_already_taken);
+            }
+            else API.sendColoredMessage(player, Language.do_not_have_permission_loan);
+        }
+        else API.sendColoredMessage(player, Language.loan_does_not_exist);
+
     }
 
 }

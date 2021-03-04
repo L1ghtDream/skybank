@@ -40,6 +40,8 @@ public class CommandHandler {
         registerCommand(LoanCommand.class);
         registerCommand(GUICommand.class);
         registerCommand(DebugCommand.class);
+        registerCommand(ReloadCommand.class);
+        registerCommand(AutoPayCommand.class);
     }
 
     private void registerCommand(Class<? extends BaseCommand> cmdClass) {

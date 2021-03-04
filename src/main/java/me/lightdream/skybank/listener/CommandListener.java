@@ -3,10 +3,12 @@ package me.lightdream.skybank.listener;
 import me.lightdream.skybank.SkyBank;
 import me.lightdream.skybank.commands.BaseCommand;
 import me.lightdream.skybank.commands.CommandHandler;
+import me.lightdream.skybank.gui.GUIManager;
 import me.lightdream.skybank.utils.API;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
 @SuppressWarnings("NullableProblems")
 public class CommandListener implements CommandExecutor/*, TabCompleter*/ {
@@ -21,6 +23,14 @@ public class CommandListener implements CommandExecutor/*, TabCompleter*/ {
 
 	// Handle sub-commands
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
+
+		if(sender instanceof Player){
+			Player player = (Player) sender;
+			if(API.getGUIStatus(player.getUniqueId())){
+				player.openInventory(GUIManager.getTaxGUI(player));
+				return true;
+			}
+		}
 		if (args.length == 0 || !cmdHandler.commandExists(args[0])) {
 			API.sendCommands(sender);
 		} else {

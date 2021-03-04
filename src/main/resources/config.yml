@@ -1,3 +1,9 @@
+# ------------------------------ General ------------------------------
+#[!] If it is increased it will increase the boot time and shut down time [!]
+#[!] IF YOU INCREASE IT YOU MUST INCREASE THE RAM [!]
+max-logger-size: 20000
+
+
 # ------------------------------ Taxing ------------------------------
 
 #in m (1d = 1440)

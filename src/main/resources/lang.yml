@@ -31,6 +31,7 @@ loan_already_taken: "You have already taken this loan."
 unpaid_loans: "You have to pay for your loans %money%."
 loan_paid: "Loans paid."
 gui_status_updated: "Your GUI status has been updated to %status%"
+reload_completed: "Reload Completed"
 
 
 #------------------------------ Placeholdered Messages ------------------------------
@@ -38,7 +39,7 @@ gui_status_updated: "Your GUI status has been updated to %status%"
 #/skybank tax
 unpaid_taxes: "Unpaid Taxes: x%tax%"
 island_size: "Size of island: %size%x%size%"
-tax_value: "Tax percent: %tax%%"
+tax_value: "Tax percent: %tax%"
 tax_price: "Tax price: %tax%"
 overtax_percent: "Overtax percent: %tax%"
 overtax_price: "Overtax price: %tax%"
@@ -60,3 +61,14 @@ estimated_interest: "Estimated Interest: %interest%"
 
 #/skybank loan
 loan_listing: "   - %loan% - %status%"
+
+#Action Logger
+log_deposit: "{name} has deposited {log_value} in its account"
+log_leave_tax: "{name} has paid {log_value} for leave tax"
+log_loan: "{name} has got the loan {log_value}"
+log_tax: "{name} has paid {log_value} for its taxes"
+log_withdraw: "{name} has withdrawed {log_value} from its account"
+log_name_format: "[{UUID}]{Name}[{IP}]"
+
+#/skybank autopay
+auto_pay: "Auto pay changed to {state}"

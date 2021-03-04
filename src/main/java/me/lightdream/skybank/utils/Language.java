@@ -1,8 +1,6 @@
 package me.lightdream.skybank.utils;
 
-import me.lightdream.skybank.SkyBank;
 import me.lightdream.skybank.enums.LoadFileType;
-import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 
 public class Language {
@@ -53,6 +51,14 @@ public class Language {
     public static String unpaid_loans;
     public static String loan_paid;
     public static String gui_status_updated;
+    public static String log_deposit;
+    public static String log_leave_tax;
+    public static String log_loan;
+    public static String log_tax;
+    public static String log_withdraw;
+    public static String log_name_format;
+    public static String reload_completed;
+    public static String auto_pay;
 
 
     public static void loadLang(){
@@ -102,8 +108,14 @@ public class Language {
         loan_already_taken                                    = lang.getString("loan_already_taken");
         unpaid_loans                                          = lang.getString("unpaid_loans");
         loan_paid                                             = lang.getString("loan_paid");
-        gui_status_updated                                    = lang.getString("gui_status_updated");
-
+        log_deposit                                           = lang.getString("log_deposit");
+        log_leave_tax                                         = lang.getString("log_leave_tax");
+        log_loan                                              = lang.getString("log_loan");
+        log_tax                                               = lang.getString("log_tax");
+        log_withdraw                                          = lang.getString("log_withdraw");
+        log_name_format                                       = lang.getString("log_name_format");
+        reload_completed                                      = lang.getString("reload_completed");
+        auto_pay                                              = lang.getString("auto_pay");
 
 
     }

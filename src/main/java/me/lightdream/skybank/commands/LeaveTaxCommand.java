@@ -1,9 +1,8 @@
 package me.lightdream.skybank.commands;
 
 import me.lightdream.skybank.SkyBank;
-import me.lightdream.skybank.enums.LoadFileType;
-import me.lightdream.skybank.utils.Language;
 import me.lightdream.skybank.utils.API;
+import me.lightdream.skybank.utils.Language;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.scheduler.BukkitRunnable;
 import world.bentobox.bentobox.database.objects.Island;
@@ -67,8 +66,9 @@ public class LeaveTaxCommand extends BaseCommand{
                     }.runTaskLater(SkyBank.INSTANCE, SkyBank.config.getInt("leave-tax-timeout") * 20L);
 
                     API.removeBalance(player.getUniqueId(), balance);
-
                     API.sendColoredMessage(player, Language.paid_taxes);
+                    API.logAction(API.processLogAction(player, String.valueOf(balance)));
+
                 }
                 else{
                     API.sendColoredMessage(sender, Language.not_enough_money);

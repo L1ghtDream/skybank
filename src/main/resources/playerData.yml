@@ -5,5 +5,6 @@ over-tax: false
 before-sanction-size: 0
 leave-tax: false
 gui: false
+auto-pay: false
 
 bank-balance: 0

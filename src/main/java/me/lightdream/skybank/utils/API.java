@@ -23,7 +23,7 @@ import static me.lightdream.skybank.SkyBank.*;
 
 public class API {
 
-    //TODO: Refactor for API and switch to use UUID for all functions
+    private static int internalCounter = 0;
 
 
     public static String color(String str) {
@@ -31,6 +31,17 @@ public class API {
     }
 
     public static ArrayList<String> color(ArrayList<String> str) {
+
+        ArrayList<String> output = new ArrayList<>();
+
+        for(String var1 : str){
+            output.add(ChatColor.translateAlternateColorCodes('&', var1));
+        }
+
+        return output;
+    }
+
+    public static ArrayList<String> color(List<String> str) {
 
         ArrayList<String> output = new ArrayList<>();
 
@@ -374,20 +385,24 @@ public class API {
         return  SkyBank.data.getInt("loan") - loadPlayerDataFile(uuid).getInt("loan");
     }
 
-    public static String processPlaceholder1(UUID uuid, String s1, String s2){
-        return color(PlaceholderAPI.setPlaceholders(Bukkit.getOfflinePlayer(uuid), process1(s1, s2)));
+    public static String processPlaceholder1(UUID uuid, String s1, String s2, String s3){
+        return color(PlaceholderAPI.setPlaceholders(Bukkit.getOfflinePlayer(uuid), process1(s1, s2, s3)));
     }
 
-    public static ArrayList<String> processPlaceholder2(UUID uuid, String s1, String s2){
-        return color(new ArrayList<>(PlaceholderAPI.setPlaceholders(Bukkit.getOfflinePlayer(uuid), process2(s1, s2))));
+    public static ArrayList<String> processPlaceholder2(UUID uuid, String s1, String s2, String s3){
+        return color(new ArrayList<>(PlaceholderAPI.setPlaceholders(Bukkit.getOfflinePlayer(uuid), process2(s1, s2, s3))));
     }
 
-    public static String process1(String s1, String s2){
-        return SkyBank.guiConfig.getString(String.format(s1, s2));
+    public static String processPlaceholder3(UUID uuid, String s1, String s2, String s3){
+        return SkyBank.guiConfig.getString(String.format(s1, s2, s3));
     }
 
-    public static List<String> process2 (String s1, String s2){
-        return (List<String>) SkyBank.guiConfig.getList(String.format(s1, s2));
+    public static String process1(String s1, String s2, String s3){
+        return SkyBank.guiConfig.getString(String.format(s1, s2, s3));
+    }
+
+    public static List<String> process2 (String s1, String s2, String s3){
+        return (List<String>) SkyBank.guiConfig.getList(String.format(s1, s2, s3));
     }
 
     public static boolean getGUIStatus(UUID uuid){
@@ -398,4 +413,29 @@ public class API {
         return getPlayerOvertaxPrice(uuid) + getTaxPrice(uuid) * getTaxData(uuid);
     }
 
+    public static void logAction(String action){
+        actionLoggerList.add(action);
+        internalCounter++;
+        if(internalCounter>100){
+            checkActionLoggerSize();
+            internalCounter=0;
+        }
+    }
+
+    public static void checkActionLoggerSize(){
+        int var1 = actionLoggerList.size();
+        int var2 = config.getInt("max-logger-size");
+
+        if(var1 > var2)
+            for(int i=0;i<var1-var2;i++)
+                actionLoggerList.remove(i);
+    }
+
+    public static String processLogAction(Player arg1, String arg2){
+        return  Language.log_deposit.replace("{name}", Language.log_name_format)
+                                    .replace("{UUID}", arg1.getUniqueId().toString())
+                                    .replace("IP", arg1.getAddress().getHostName()
+                                    .replace("{name}", arg1.getName()))
+                                    .replace("{log_value}", arg2);
+    }
 }

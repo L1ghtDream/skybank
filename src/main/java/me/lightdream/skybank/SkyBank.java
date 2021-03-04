@@ -32,6 +32,7 @@ public final class SkyBank extends JavaPlugin {
     public static FileConfiguration data;
     public static FileConfiguration ipLog;
     public static FileConfiguration guiConfig;
+    public static FileConfiguration actionLogger;
     public static GameModeAddon skyblock;
     public static BentoBox bentoBox;
     public static CommandHandler commandHandler;
@@ -45,21 +46,28 @@ public final class SkyBank extends JavaPlugin {
     public static List<Map<?, ?>> loanedPLayers;
     public static ArrayList<String> loanedPLayersNames = new ArrayList<>();
     public static List<Map<?, ?>> playerLogger;
-    public static ArrayList<String> playerLoggerNames = new ArrayList<>();;
+    public static ArrayList<String> playerLoggerNames = new ArrayList<>();
+    public static List<String> actionLoggerList = new ArrayList<>();
+
 
     public static NamespacedKey payTax;
-    public static NamespacedKey getLoan;
-    public static NamespacedKey payLoan;
-    //public static NamespacedKey helpKey;
-    //public static NamespacedKey viewTopKey;
-
+    public static NamespacedKey taxGUI;
+    public static NamespacedKey loanGUI;
+    public static NamespacedKey bankGUI;
+    public static NamespacedKey deposit;
+    public static NamespacedKey withdraw;
+    public static NamespacedKey loan;
 
     @Override
     public void onEnable() {
 
         payTax = new NamespacedKey(this,"payTax");
-        getLoan = new NamespacedKey(this,"getLoan");
-        payLoan = new NamespacedKey(this,"payLoan");
+        taxGUI = new NamespacedKey(this,"taxGUI");
+        loanGUI = new NamespacedKey(this,"loanGUI");
+        bankGUI = new NamespacedKey(this,"bankGUI");
+        deposit = new NamespacedKey(this,"deposit");
+        withdraw = new NamespacedKey(this,"withdraw");
+        loan = new NamespacedKey(this,"loan");
 
         if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
             new PAPI().register();
@@ -86,7 +94,6 @@ public final class SkyBank extends JavaPlugin {
             return;
         }
         setupPermissions();
-        //setupChat();
         Language.loadLang();
 
         //Setup data files
@@ -94,8 +101,7 @@ public final class SkyBank extends JavaPlugin {
         data = API.loadFile("data.yml", LoadFileType.DEFAULT);
         ipLog = API.loadFile("ip.yml", LoadFileType.DEFAULT);
         guiConfig = API.loadFile("gui.yml", LoadFileType.DEFAULT);
-
-        //Setup data.yml
+        actionLogger = API.loadFile("log.yml", LoadFileType.DEFAULT);
         loanedPLayers = API.loadFile("data.yml", LoadFileType.DEFAULT).getMapList("loaned-players");
 
         for(Map<?, ?> map : loanedPLayers)
@@ -103,6 +109,11 @@ public final class SkyBank extends JavaPlugin {
 
         //Setup ip.yml
         playerLogger = ipLog.getMapList("log");
+
+        actionLoggerList = (List<String>) actionLogger.getList("log");
+
+        API.checkActionLoggerSize();
+
 
         for(Map<?, ?> map : playerLogger)
             playerLoggerNames.add((String) map.get("uuid"));
@@ -122,12 +133,42 @@ public final class SkyBank extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        //TODO: Fix the non working save loanedPLayers
-        System.out.println(loanedPLayers);
         data.set("loaned-players", loanedPLayers);
 
         API.saveFile(config, "config.yml");
         API.saveFile(data, "data.yml");
+        API.saveFile(ipLog, "ip.yml");
+    }
+
+    public static void reload(){
+        data.set("loaned-players", loanedPLayers);
+
+        API.saveFile(config, "config.yml");
+        API.saveFile(data, "data.yml");
+        API.saveFile(ipLog, "ip.yml");
+
+        config = API.loadFile("config.yml", LoadFileType.DEFAULT);
+        data = API.loadFile("data.yml", LoadFileType.DEFAULT);
+        ipLog = API.loadFile("ip.yml", LoadFileType.DEFAULT);
+        guiConfig = API.loadFile("gui.yml", LoadFileType.DEFAULT);
+        actionLogger = API.loadFile("log.yml", LoadFileType.DEFAULT);
+        loanedPLayers = API.loadFile("data.yml", LoadFileType.DEFAULT).getMapList("loaned-players");
+
+        for(Map<?, ?> map : loanedPLayers)
+            loanedPLayersNames.add((String) ((List<String>) map.get("uuid")).get(0));
+
+        playerLogger = ipLog.getMapList("log");
+        actionLoggerList = (List<String>) actionLogger.getList("log");
+
+        API.checkActionLoggerSize();
+
+        for(Map<?, ?> map : playerLogger)
+            playerLoggerNames.add((String) map.get("uuid"));
+
+        Runnable.taxTime = config.getInt("tax-time") * 60 * 20;
+        Runnable.interestTime = config.getInt("interest-time") * 60 * 20;
+        Runnable.loanTime = config.getInt("loanTime-time") * 60 * 20;
+
     }
 
 

@@ -1,8 +1,7 @@
 package me.lightdream.skybank.commands;
 
-import me.lightdream.skybank.enums.LoadFileType;
-import me.lightdream.skybank.utils.Language;
 import me.lightdream.skybank.utils.API;
+import me.lightdream.skybank.utils.Language;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 
