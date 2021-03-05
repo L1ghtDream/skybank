@@ -24,12 +24,15 @@ public class CommandListener implements CommandExecutor/*, TabCompleter*/ {
 	// Handle sub-commands
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 
-		if(sender instanceof Player){
-			Player player = (Player) sender;
-			if(API.getGUIStatus(player.getUniqueId())){
-				player.openInventory(GUIManager.getTaxGUI(player));
-				return true;
+		if(args.length == 0){
+			if(sender instanceof Player){
+				Player player = (Player) sender;
+				if(API.getGUIStatus(player.getUniqueId())){
+					player.openInventory(GUIManager.getMainGUI(player));
+					return true;
+				}
 			}
+
 		}
 		if (args.length == 0 || !cmdHandler.commandExists(args[0])) {
 			API.sendCommands(sender);

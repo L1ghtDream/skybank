@@ -18,6 +18,8 @@ public class GUICommand extends BaseCommand{
         FileConfiguration data = API.loadPlayerDataFile(player.getUniqueId());
         data.set("gui", !data.getBoolean("gui"));
         API.savePlayerDataFile(player.getUniqueId(), data);
+        System.out.println(Language.gui_status_updated);
+        System.out.println(data.getBoolean("gui"));
         API.sendColoredMessage(player, Language.gui_status_updated.replace("%status%", String.valueOf(data.getBoolean("gui"))));
 
         return true;

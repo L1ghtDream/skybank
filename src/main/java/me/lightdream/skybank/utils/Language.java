@@ -50,7 +50,6 @@ public class Language {
     public static String loan_already_taken;
     public static String unpaid_loans;
     public static String loan_paid;
-    public static String gui_status_updated;
     public static String log_deposit;
     public static String log_leave_tax;
     public static String log_loan;
@@ -59,6 +58,8 @@ public class Language {
     public static String log_name_format;
     public static String reload_completed;
     public static String auto_pay;
+    public static String gui_status_updated;
+
 
 
     public static void loadLang(){
@@ -116,6 +117,7 @@ public class Language {
         log_name_format                                       = lang.getString("log_name_format");
         reload_completed                                      = lang.getString("reload_completed");
         auto_pay                                              = lang.getString("auto_pay");
+        gui_status_updated                                    = lang.getString("gui_status_updated");
 
 
     }
